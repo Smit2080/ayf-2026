@@ -24,13 +24,11 @@ export default function HomePage() {
         <Ticker />
         <EventCategories />
         <WhyAYF />
-        <div className="blend-group">
+        <section className="journey-cta-vol">
           <Journey />
-          <div className="blend-bar blend-bar--dark-purple" />
           <CTA />
-          <div className="blend-bar blend-bar--purple-white" />
           <VolunteerSection />
-        </div>
+        </section>
         <Instagram />
         <StatsCounter />
         <Testimonials />
