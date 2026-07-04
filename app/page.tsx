@@ -10,7 +10,6 @@ import Gallery from '@/components/Gallery';
 import Instagram from '@/components/Instagram';
 import StatsCounter from '@/components/StatsCounter';
 import Testimonials from '@/components/Testimonials';
-import Partners from '@/components/Partners';
 import FAQSection from '@/components/FAQ';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
@@ -34,7 +33,6 @@ export default function HomePage() {
         <Instagram />
         <StatsCounter />
         <Testimonials />
-        <Partners />
         <FAQSection />
       </main>
 
