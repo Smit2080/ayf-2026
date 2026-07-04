@@ -51,7 +51,7 @@ export default function Navbar() {
           <li><a className="active" href="#top">Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#events">Events</a></li>
-          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#social">Social</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
         <div className="hide-mobile">

@@ -2,7 +2,7 @@ const cards = ['var(--insta-1)', 'var(--insta-2)', 'var(--insta-3)'];
 
 export default function Instagram() {
   return (
-    <section className="insta reveal">
+    <section className="insta reveal" id="social">
       <div className="wrap">
         <div className="insta-head">
           <span className="sticker sticker-purple" style={{ marginBottom: 0 }}>Social</span>
