@@ -59,7 +59,7 @@ export default function Navbar() {
             <AdminButton mobile />
           </li>
         </ul>
-        <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="hide-mobile">
           <a className="btn btn-solid" href="/register?type=competition">Register</a>
           <AdminButton />
         </div>
