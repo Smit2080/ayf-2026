@@ -1,42 +1,290 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { FormEvent, Suspense, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { FormEvent, Suspense, useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 type Tab = 'competition' | 'volunteer';
 type Submitted = 'comp' | 'vol' | null;
 
 function RegisterContent() {
+  const supabase = createClient();
   const searchParams = useSearchParams();
+  const router = useRouter();
+
   const initialTab: Tab = searchParams.get('type') === 'volunteer' ? 'volunteer' : 'competition';
   const [tab, setTab] = useState<Tab>(initialTab);
-  const [pendingSubmit, setPendingSubmit] = useState<Submitted>(null);
   const [success, setSuccess] = useState<Submitted>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Auth State
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Profile data fetched from DB if exists
+  const [hasProfile, setHasProfile] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Form Fields
+  const [fullName, setFullName] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [age, setAge] = useState('');
+  const [college, setCollege] = useState('');
+  const [stream, setStream] = useState('');
+
+  // Competition specific fields
+  const [competition, setCompetition] = useState('');
+  const [performanceDetails, setPerformanceDetails] = useState('');
+
+  // Volunteer specific fields
+  const [gender, setGender] = useState('');
+  const [city, setCity] = useState('');
+  const [languages, setLanguages] = useState('');
+  const [experience, setExperience] = useState('');
+  const [whyVolunteer, setWhyVolunteer] = useState('');
+  const [instagramId, setInstagramId] = useState('');
+  const [hasAppliedVolunteer, setHasAppliedVolunteer] = useState(false);
+
+  // Check initial session
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setFullName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
+        fetchProfileAndStatus(session.user.id);
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        setFullName(session.user.user_metadata?.full_name || session.user.user_metadata?.name || '');
+        fetchProfileAndStatus(session.user.id);
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function fetchProfileAndStatus(userId: string) {
+    setProfileLoading(true);
+    try {
+      // Fetch profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (profile && !profileError) {
+        setHasProfile(true);
+        setFullName(profile.full_name);
+        setWhatsapp(profile.whatsapp_number);
+        setAge(profile.age.toString());
+        setCollege(profile.college);
+        setStream(profile.stream);
+      }
+
+      // Check if already applied as volunteer
+      const { data: volApp, error: volError } = await supabase
+        .from('volunteers')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (volApp && !volError) {
+        setHasAppliedVolunteer(true);
+      }
+    } catch (e) {
+      console.error('Error fetching profile:', e);
+    } finally {
+      setProfileLoading(false);
+      setAuthLoading(false);
+    }
+  }
 
   function selectTab(nextTab: Tab) {
     setTab(nextTab);
     setSuccess(null);
-    setPendingSubmit(null);
   }
 
-  function submitForm(event: FormEvent<HTMLFormElement>, type: Exclude<Submitted, null>) {
-    const terms = document.getElementById(type === 'comp' ? 'compTerms' : 'volTerms') as HTMLInputElement | null;
+  async function handleGoogleSignIn() {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/register?type=${tab}`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      alert('Sign-in failed: ' + error.message);
+    }
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUser(null);
+    setHasProfile(false);
+    setFullName('');
+    setWhatsapp('');
+    setAge('');
+    setCollege('');
+    setStream('');
+    setHasAppliedVolunteer(false);
+  }
+
+  async function handleFormSubmit(event: FormEvent<HTMLFormElement>, type: 'comp' | 'vol') {
+    event.preventDefault();
+    if (!user) return;
+
+    // Check terms and conditions checkbox
+    const termsId = type === 'comp' ? 'compTerms' : 'volTerms';
+    const terms = document.getElementById(termsId) as HTMLInputElement | null;
     if (!terms?.checked) {
-      event.preventDefault();
       alert('Please agree to the Terms & Conditions.');
       return;
     }
-    setPendingSubmit(type);
+
+    setSubmitting(true);
+
+    try {
+      // 1. Upsert Profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: fullName,
+          email: user.email!,
+          whatsapp_number: whatsapp,
+          age: parseInt(age),
+          college: college,
+          stream: stream,
+        });
+
+      if (profileError) throw profileError;
+
+      // 2. Insert form-specific registration
+      if (type === 'comp') {
+        const { error: compError } = await supabase
+          .from('competitions')
+          .insert({
+            user_id: user.id,
+            competition_name: competition,
+            performance_details: performanceDetails,
+          });
+
+        if (compError) throw compError;
+        setSuccess('comp');
+      } else {
+        const { error: volError } = await supabase
+          .from('volunteers')
+          .insert({
+            user_id: user.id,
+            gender: gender,
+            city: city,
+            languages: languages,
+            experience: experience,
+            why_volunteer: whyVolunteer,
+            instagram_id: instagramId || null,
+          });
+
+        if (volError) throw volError;
+        setHasAppliedVolunteer(true);
+        setSuccess('vol');
+      }
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error: any) {
+      console.error(error);
+      alert('Registration failed: ' + (error.message || 'Unknown error occurred.'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  function iframeLoaded() {
-    if (!pendingSubmit) return;
-    setSuccess(pendingSubmit);
-    setPendingSubmit(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Auth loading screen
+  if (authLoading) {
+    return (
+      <div className="register-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="register-checkmark" style={{ animation: 'spin 1.5s linear infinite', border: '3px solid var(--orange)', borderTopColor: 'transparent', borderRadius: '50%', width: 50, height: 50, margin: '0 auto 20px' }} />
+          <h2 style={{ fontFamily: 'Anton', fontSize: 24, letterSpacing: '0.05em' }}>Loading Session...</h2>
+        </div>
+        <style jsx global>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
   }
 
+  // Not logged in: Show Google sign-in wall
+  if (!user) {
+    return (
+      <main className="register-page">
+        <header className="register-header">
+          <div className="register-wrap register-nav">
+            <Link className="register-logo" href="/" aria-label="AYF Home">
+              <img src="/AYF_logo_clean.png" alt="AYF" />
+            </Link>
+            <Link className="btn btn-ghost register-back" href="/">Back</Link>
+          </div>
+        </header>
+
+        <section className="register-section" style={{ display: 'flex', alignItems: 'center', padding: '80px 0' }}>
+          <div className="register-wrap" style={{ width: '100%' }}>
+            <div className="register-card comp" style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto', padding: '50px 30px' }}>
+              <div style={{ display: 'inline-block', marginBottom: 20 }}>
+                <img src="/AYF_logo_clean.png" alt="AYF" style={{ height: 60, width: 'auto' }} />
+              </div>
+              <h1 style={{ fontFamily: 'Anton', fontSize: '32px', marginBottom: '16px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                Join AYF <span>2026</span>
+              </h1>
+              <p style={{ fontSize: '14px', color: 'rgba(247, 247, 247, 0.6)', lineHeight: '1.6', marginBottom: '32px' }}>
+                To register for competitions or apply as a volunteer, please verify your email by signing in with your Google account.
+              </p>
+
+              <button
+                onClick={handleGoogleSignIn}
+                className="btn btn-solid"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontSize: '15px',
+                  padding: '16px 32px',
+                  width: '100%',
+                  justifyContent: 'center',
+                  background: '#ffffff',
+                  color: '#0d0d0f',
+                  borderColor: '#ffffff',
+                  boxShadow: '0 4px 20px rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.77c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                </svg>
+                Sign in with Google
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // Success screen
   if (success === 'comp') {
     return (
       <SuccessPanel
@@ -45,9 +293,9 @@ function RegisterContent() {
         highlight="Submitted!"
         body={
           <>
-            Thank you for registering for AYF 2026. We have received your application. Please save the audition details below.<br /><br />
-            <strong>Registration Fee:</strong> Rs.500 payable at the audition venue<br />
-            <strong>What's Next:</strong> We will contact you via WhatsApp with your audition slot details.<br /><br />
+            Thank you for registering for AYF 2026. We have received your application. Your details are securely saved.<br /><br />
+            <strong>Registration Fee:</strong> Rs.500 payable at the audition venue (Reel Competition is free)<br />
+            <strong>What's Next:</strong> We will contact you via WhatsApp with your audition slot details. You can view your real-time status in your dashboard.<br /><br />
             Follow <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener">@amravatiyouthfest</a> for updates.
           </>
         }
@@ -64,7 +312,7 @@ function RegisterContent() {
         body={
           <>
             Thank you for applying to volunteer at AYF 2026. We have received your application and will review it shortly.<br /><br />
-            <strong>What's Next:</strong> We will contact you via WhatsApp if your application is shortlisted.<br /><br />
+            <strong>What's Next:</strong> We will contact you via WhatsApp if your application is shortlisted. You can track your application status in your dashboard.<br /><br />
             Follow <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener">@amravatiyouthfest</a> for updates.
           </>
         }
@@ -79,12 +327,48 @@ function RegisterContent() {
           <Link className="register-logo" href="/" aria-label="AYF Home">
             <img src="/AYF_logo_clean.png" alt="AYF" />
           </Link>
-          <Link className="btn btn-ghost register-back" href="/">Back</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Link className="btn btn-ghost register-back" href="/dashboard">Dashboard</Link>
+            <button className="btn btn-ghost register-back" onClick={handleSignOut}>Sign Out</button>
+          </div>
         </div>
       </header>
 
       <section className="register-section" id="formSection">
         <div className="register-wrap">
+          {/* User badge */}
+          <div style={{
+            background: 'rgba(247,247,247,0.05)',
+            border: '1px solid var(--line)',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginBottom: '28px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '13px'
+          }}>
+            <div>
+              <span style={{ color: 'rgba(247,247,247,0.5)' }}>Signed in as: </span>
+              <strong>{user.email}</strong>
+            </div>
+            <button
+              onClick={handleSignOut}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--pink)',
+                cursor: 'pointer',
+                fontFamily: 'Space Mono, monospace',
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em'
+              }}
+            >
+              Change Account
+            </button>
+          </div>
+
           <div className="register-tabs" role="tablist">
             <button className={tab === 'competition' ? 'register-tab active' : 'register-tab'} onClick={() => selectTab('competition')} type="button" role="tab" aria-selected={tab === 'competition'}>Competition Registration</button>
             <button className={tab === 'volunteer' ? 'register-tab active' : 'register-tab'} onClick={() => selectTab('volunteer')} type="button" role="tab" aria-selected={tab === 'volunteer'}>Apply as Volunteer</button>
@@ -113,76 +397,124 @@ function RegisterContent() {
             </div>
           )}
 
-          <div className={tab === 'competition' ? 'register-card comp' : 'register-card vol'}>
-            {tab === 'competition' ? <CompetitionForm onSubmit={submitForm} /> : <VolunteerForm onSubmit={submitForm} />}
-            <iframe name="hidden_iframe" id="hidden_iframe" className="register-hidden-frame" title="form-submit" onLoad={iframeLoaded} />
-          </div>
+          {profileLoading ? (
+            <div style={{ padding: '60px 0', textAlign: 'center' }}>
+              <div className="register-checkmark" style={{ animation: 'spin 1.5s linear infinite', border: '3px solid var(--purple)', borderTopColor: 'transparent', borderRadius: '50%', width: 40, height: 40, margin: '0 auto 16px' }} />
+              <p style={{ fontFamily: 'Space Mono', fontSize: '12px', color: 'rgba(247,247,247,0.5)' }}>Loading Profile...</p>
+            </div>
+          ) : (
+            <div className={tab === 'competition' ? 'register-card comp' : 'register-card vol'}>
+              {tab === 'competition' ? (
+                <form onSubmit={(e) => handleFormSubmit(e, 'comp')}>
+                  <div className="register-grid">
+                    <Field className="full" label="Competition" required>
+                      <select required value={competition} onChange={(e) => setCompetition(e.target.value)}>
+                        <option value="" disabled>Select competition</option>
+                        <option value="Science Exhibition">Science Exhibition</option>
+                        <option value="Youth Parliament">Youth Parliament</option>
+                        <option value="Startup Competition">Startup Competition</option>
+                        <option value="Amravati's Got Talent">Amravati&apos;s Got Talent</option>
+                        <option value="Reel Competition ( No Fees for Reel Competion )">Reel Competition (Free Entry)</option>
+                      </select>
+                    </Field>
+                    <Field label="Full Name" required>
+                      <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" required />
+                    </Field>
+                    <Field label="Age" required>
+                      <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="16 - 35" min="16" max="35" required />
+                    </Field>
+                    <Field label="WhatsApp Number" required>
+                      <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="Enter your WhatsApp number" required />
+                    </Field>
+                    <Field label="Email" required>
+                      <input type="email" value={user.email} disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                    </Field>
+                    <Field label="College / Institution" required>
+                      <input type="text" value={college} onChange={(e) => setCollege(e.target.value)} placeholder="Current or past college" required />
+                    </Field>
+                    <Field label="Field / Stream of Study" required>
+                      <input type="text" value={stream} onChange={(e) => setStream(e.target.value)} placeholder="Science, Arts, Commerce, etc." required />
+                    </Field>
+                    <Field className="full" label="Performance Details" required>
+                      <textarea value={performanceDetails} onChange={(e) => setPerformanceDetails(e.target.value)} placeholder="Tell us about your participation and which competition you're entering in detail" required />
+                    </Field>
+                  </div>
+                  <Terms type="comp" />
+                  <div className="register-submit">
+                    <button type="submit" className="btn btn-solid register-submit-btn" disabled={submitting}>
+                      {submitting ? 'Submitting...' : 'Register Now'}
+                    </button>
+                    <p className="register-submit-note">Rs.500 fee payable at venue. Reel Competition is free.</p>
+                  </div>
+                </form>
+              ) : (
+                hasAppliedVolunteer ? (
+                  <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                    <h3 style={{ fontFamily: 'Anton', fontSize: '20px', marginBottom: '12px' }}>Already Applied!</h3>
+                    <p style={{ fontSize: '14px', color: 'rgba(247,247,247,0.6)', marginBottom: '24px', lineHeight: '1.6' }}>
+                      You have already submitted a volunteer application. You can view your application status or register for competitions in your dashboard.
+                    </p>
+                    <Link href="/dashboard" className="btn btn-solid" style={{ background: 'var(--purple)', borderColor: 'var(--purple)' }}>Go to Dashboard</Link>
+                  </div>
+                ) : (
+                  <form onSubmit={(e) => handleFormSubmit(e, 'vol')}>
+                    <div className="register-grid">
+                      <Field label="Full Name" required>
+                        <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" required />
+                      </Field>
+                      <Field label="WhatsApp Number" required>
+                        <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="Enter your WhatsApp number" required />
+                      </Field>
+                      <Field label="Email" required>
+                        <input type="email" value={user.email} disabled style={{ opacity: 0.6, cursor: 'not-allowed' }} />
+                      </Field>
+                      <Field label="Age" required>
+                        <input type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="16 - 35" min="16" max="35" required />
+                      </Field>
+                      <Field className="full" label="Gender" required>
+                        <div className="register-radio">
+                          <label><input type="radio" name="gender" value="MALE" checked={gender === 'MALE'} onChange={() => setGender('MALE')} required /> MALE</label>
+                          <label><input type="radio" name="gender" value="FEMALE" checked={gender === 'FEMALE'} onChange={() => setGender('FEMALE')} /> FEMALE</label>
+                          <label><input type="radio" name="gender" value="OTHER" checked={gender === 'OTHER'} onChange={() => setGender('OTHER')} /> OTHER</label>
+                        </div>
+                      </Field>
+                      <Field label="College / Institution" required>
+                        <input type="text" value={college} onChange={(e) => setCollege(e.target.value)} placeholder="Enter your college name" required />
+                      </Field>
+                      <Field label="Field / Stream of Study" required>
+                        <input type="text" value={stream} onChange={(e) => setStream(e.target.value)} placeholder="Science, Arts, Commerce, etc." required />
+                      </Field>
+                      <Field label="Which city do you currently live in?" required>
+                        <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Your city" required />
+                      </Field>
+                      <Field label="Languages Known" required>
+                        <input type="text" value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="Marathi, Hindi, English, etc." required />
+                      </Field>
+                      <Field className="full" label="Previous Event Experience" required>
+                        <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="College Fest, Community Work, Event, etc." required />
+                      </Field>
+                      <Field className="full" label="Why do you want to volunteer at AYF 2026?" required>
+                        <textarea value={whyVolunteer} onChange={(e) => setWhyVolunteer(e.target.value)} placeholder="Your selection is based on this answer. Tell us why you want to be part of the team." required />
+                      </Field>
+                      <Field label="Instagram Account">
+                        <input type="text" value={instagramId} onChange={(e) => setInstagramId(e.target.value)} placeholder="Mention your Instagram ID" />
+                      </Field>
+                    </div>
+                    <Terms type="vol" />
+                    <div className="register-submit">
+                      <button type="submit" className="btn btn-solid register-submit-btn vol" disabled={submitting}>
+                        {submitting ? 'Submitting...' : 'Apply as Volunteer'}
+                      </button>
+                      <p className="register-submit-note">No monetary compensation. Volunteering is purely voluntary.</p>
+                    </div>
+                  </form>
+                )
+              )}
+            </div>
+          )}
         </div>
       </section>
     </main>
-  );
-}
-
-function CompetitionForm({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>, type: 'comp') => void }) {
-  return (
-    <form action="https://docs.google.com/forms/d/e/1FAIpQLSdyg6KnndJiLOVIyWCJ_PRqZiMFjeiGR1frYCheyYPNsTf5cQ/formResponse" method="POST" target="hidden_iframe" onSubmit={(event) => onSubmit(event, 'comp')}>
-      <div className="register-grid">
-        <Field className="full" label="Competition" required>
-          <select name="entry.2092238618" required defaultValue="">
-            <option value="" disabled>Select competition</option>
-            <option value="Science Exhibition">Science Exhibition</option>
-            <option value="Youth Parliament">Youth Parliament</option>
-            <option value="Startup Competition">Startup Competition</option>
-            <option value="Amravati's Got Talent">Amravati&apos;s Got Talent</option>
-            <option value="Reel Competition ( No Fees for Reel Competion )">Reel Competition (Free Entry)</option>
-          </select>
-        </Field>
-        <Field label="Full Name" required><input type="text" name="entry.1556369182" placeholder="Your full name" required /></Field>
-        <Field label="Age" required><input type="number" name="entry.394387559" placeholder="16 - 35" min="16" max="35" required /></Field>
-        <Field label="WhatsApp Number" required><input type="tel" name="entry.1333852073" placeholder="Enter your WhatsApp number" required /></Field>
-        <Field label="Email" required><input type="email" name="entry.1844094378" placeholder="xyz@gmail.com" required /></Field>
-        <Field label="College / Institution" required><input type="text" name="entry.1249710242" placeholder="Current or past college" required /></Field>
-        <Field label="Field / Stream of Study" required><input type="text" name="entry.666468421" placeholder="Science, Arts, Commerce, etc." required /></Field>
-        <Field className="full" label="Performance Details" required><textarea name="entry.479301265" placeholder="Tell us about your participation and which competition you're entering in detail" required /></Field>
-      </div>
-      <Terms type="comp" />
-      <div className="register-submit">
-        <button type="submit" className="btn btn-solid register-submit-btn">Register Now</button>
-        <p className="register-submit-note">Rs.500 fee payable at venue. Reel Competition is free.</p>
-      </div>
-    </form>
-  );
-}
-
-function VolunteerForm({ onSubmit }: { onSubmit: (event: FormEvent<HTMLFormElement>, type: 'vol') => void }) {
-  return (
-    <form action="https://docs.google.com/forms/d/e/1FAIpQLSepX7-G5b6RATmh8YtVDiPwNcaW53st2J70iG2Qr1ZESJr2LA/formResponse" method="POST" target="hidden_iframe" onSubmit={(event) => onSubmit(event, 'vol')}>
-      <div className="register-grid">
-        <Field label="Full Name" required><input type="text" name="entry.2092238618" placeholder="Your full name" required /></Field>
-        <Field label="WhatsApp Number" required><input type="tel" name="entry.1019139433" placeholder="Enter your WhatsApp number" required /></Field>
-        <Field label="Email" required><input type="email" name="entry.1556369182" placeholder="xyz@gmail.com" required /></Field>
-        <Field label="Age" required><input type="number" name="entry.479301265" placeholder="16 - 35" min="16" max="35" required /></Field>
-        <Field className="full" label="Gender" required>
-          <div className="register-radio">
-            <label><input type="radio" name="entry.1647575826" value="MALE" required /> MALE</label>
-            <label><input type="radio" name="entry.1647575826" value="FEMALE" /> FEMALE</label>
-            <label><input type="radio" name="entry.1647575826" value="OTHER" /> OTHER</label>
-          </div>
-        </Field>
-        <Field label="College / Institution" required><input type="text" name="entry.1401600069" placeholder="Enter your college name" required /></Field>
-        <Field label="Field / Stream of Study" required><input type="text" name="entry.1403138662" placeholder="Science, Arts, Commerce, etc." required /></Field>
-        <Field label="Which city do you currently live in?" required><input type="text" name="entry.1192878501" placeholder="Your city" required /></Field>
-        <Field label="Languages Known" required><input type="text" name="entry.1410848207" placeholder="Marathi, Hindi, English, etc." required /></Field>
-        <Field className="full" label="Previous Event Experience" required><textarea name="entry.13296338" placeholder="College Fest, Community Work, Event, etc." required /></Field>
-        <Field className="full" label="Why do you want to volunteer at AYF 2026?" required><textarea name="entry.961122328" placeholder="Your selection is based on this answer. Tell us why you want to be part of the team." required /></Field>
-        <Field label="Instagram Account"><input type="text" name="entry.1183718771" placeholder="Mention your Instagram ID" /></Field>
-      </div>
-      <Terms type="vol" />
-      <div className="register-submit">
-        <button type="submit" className="btn btn-solid register-submit-btn vol">Apply as Volunteer</button>
-        <p className="register-submit-note">No monetary compensation. Volunteering is purely voluntary.</p>
-      </div>
-    </form>
   );
 }
 
@@ -249,12 +581,23 @@ function Terms({ type }: { type: 'comp' | 'vol' }) {
 function SuccessPanel({ tone, title, highlight, body }: { tone: 'comp' | 'vol'; title: string; highlight: string; body: React.ReactNode }) {
   return (
     <main className="register-page">
-      <section className={`register-success ${tone}`}>
-        <div className="register-wrap">
-          <div className="register-checkmark">{'\u2713'}</div>
-          <h2>{title} <span>{highlight}</span></h2>
-          <p>{body}</p>
-          <Link className="btn btn-outline" href="/">Back to Home</Link>
+      <section className={`register-success ${tone}`} style={{ display: 'flex', alignItems: 'center', minHeight: '100vh', padding: '40px 24px' }}>
+        <div className="register-wrap" style={{ width: '100%' }}>
+          <div className="register-checkmark" style={{ width: 72, height: 72, background: tone === 'comp' ? 'var(--lime)' : 'var(--purple)', color: tone === 'comp' ? 'var(--ink)' : 'var(--white)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, fontWeight: 'bold', margin: '0 auto 24px' }}>✓</div>
+          <h2 style={{ fontFamily: 'Anton', fontSize: '32px', marginBottom: '16px', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+            {title} <span style={{ color: tone === 'comp' ? 'var(--orange)' : 'var(--purple)' }}>{highlight}</span>
+          </h2>
+          <p style={{ fontSize: '15px', color: 'rgba(247, 247, 247, 0.65)', lineHeight: '1.7', marginBottom: '32px', maxWidth: '600px', margin: '0 auto 32px' }}>
+            {body}
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link className="btn btn-solid" href="/dashboard" style={{ background: tone === 'comp' ? 'var(--orange)' : 'var(--purple)', borderColor: tone === 'comp' ? 'var(--orange)' : 'var(--purple)' }}>
+              Go to Dashboard
+            </Link>
+            <Link className="btn btn-outline" href="/">
+              Back to Home
+            </Link>
+          </div>
         </div>
       </section>
     </main>
