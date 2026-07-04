@@ -45,6 +45,7 @@ function RegisterContent() {
   const [whyVolunteer, setWhyVolunteer] = useState('');
   const [instagramId, setInstagramId] = useState('');
   const [hasAppliedVolunteer, setHasAppliedVolunteer] = useState(false);
+  const [registeredCompetitions, setRegisteredCompetitions] = useState<string[]>([]);
 
   // Check initial session
   useEffect(() => {
@@ -100,6 +101,16 @@ function RegisterContent() {
       if (volApp && !volError) {
         setHasAppliedVolunteer(true);
       }
+
+      // Fetch all competitions user has already registered for
+      const { data: compData } = await supabase
+        .from('competitions')
+        .select('competition_name')
+        .eq('user_id', userId);
+
+      if (compData) {
+        setRegisteredCompetitions(compData.map((c) => c.competition_name));
+      }
     } catch (e) {
       console.error('Error fetching profile:', e);
     } finally {
@@ -142,6 +153,7 @@ function RegisterContent() {
     setCollege('');
     setStream('');
     setHasAppliedVolunteer(false);
+    setRegisteredCompetitions([]);
   }
 
   async function handleFormSubmit(event: FormEvent<HTMLFormElement>, type: 'comp' | 'vol') {
@@ -176,6 +188,13 @@ function RegisterContent() {
 
       // 2. Insert form-specific registration
       if (type === 'comp') {
+        // Guard: prevent duplicate competition registration
+        if (registeredCompetitions.includes(competition)) {
+          alert(`You have already registered for "${competition}". Each competition allows only one registration per person.`);
+          setSubmitting(false);
+          return;
+        }
+
         const { error: compError } = await supabase
           .from('competitions')
           .insert({
@@ -185,6 +204,7 @@ function RegisterContent() {
           });
 
         if (compError) throw compError;
+        setRegisteredCompetitions((prev) => [...prev, competition]);
         setSuccess('comp');
       } else {
         const { error: volError } = await supabase
@@ -443,6 +463,18 @@ function RegisterContent() {
                         <option value="Amravati's Got Talent">Amravati&apos;s Got Talent</option>
                         <option value="Reel Competition ( No Fees for Reel Competion )">Reel Competition (Free Entry)</option>
                       </select>
+                      {competition && registeredCompetitions.includes(competition) && (
+                        <p style={{
+                          color: '#FF4D4D',
+                          fontSize: '13px',
+                          marginTop: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}>
+                          ⚠️ You have already registered for <strong>{competition}</strong>. Each competition allows only one entry per person.
+                        </p>
+                      )}
                     </Field>
                     <Field label="Full Name" required>
                       <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" required />
@@ -468,7 +500,11 @@ function RegisterContent() {
                   </div>
                   <Terms type="comp" />
                   <div className="register-submit">
-                    <button type="submit" className="btn btn-solid register-submit-btn" disabled={submitting}>
+                    <button
+                      type="submit"
+                      className="btn btn-solid register-submit-btn"
+                      disabled={submitting || (competition !== '' && registeredCompetitions.includes(competition))}
+                    >
                       {submitting ? 'Submitting...' : 'Register Now'}
                     </button>
                     <p className="register-submit-note">Rs.500 fee payable at venue. Reel Competition is free.</p>
