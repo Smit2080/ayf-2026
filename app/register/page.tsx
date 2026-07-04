@@ -228,6 +228,7 @@ function RegisterContent() {
 
   // Not logged in: Show Google sign-in wall
   if (!user) {
+    const errorParam = searchParams.get('error');
     return (
       <main className="register-page">
         <header className="register-header">
@@ -251,6 +252,27 @@ function RegisterContent() {
               <p style={{ fontSize: '14px', color: 'rgba(247, 247, 247, 0.6)', lineHeight: '1.6', marginBottom: '32px' }}>
                 To register for competitions or apply as a volunteer, please verify your email by signing in with your Google account.
               </p>
+
+              {errorParam && (
+                <div style={{
+                  background: 'rgba(255, 46, 138, 0.1)',
+                  border: '1px solid var(--pink)',
+                  borderRadius: '6px',
+                  padding: '12px 16px',
+                  marginBottom: '24px',
+                  fontSize: '13px',
+                  color: 'var(--pink)',
+                  textAlign: 'left',
+                  lineHeight: '1.5'
+                }}>
+                  <strong>Authentication Failed:</strong> The authentication callback could not establish a session. Please check that:
+                  <ul style={{ paddingLeft: '20px', marginTop: '6px', listStyleType: 'disc', fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <li>Your <code>.env.local</code> contains the correct Supabase URL and Anon Key.</li>
+                    <li>Google Auth is enabled in your Supabase dashboard.</li>
+                    <li>Your Google OAuth credentials Client ID and Client Secret match.</li>
+                  </ul>
+                </div>
+              )}
 
               <button
                 onClick={handleGoogleSignIn}
