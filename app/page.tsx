@@ -32,8 +32,6 @@ export default function HomePage() {
       </main>
 
       <Footer />
-
-      <div className="toast">Frontend demo: saved locally</div>
     </>
   );
 }
