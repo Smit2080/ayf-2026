@@ -1,0 +1,19 @@
+{
+    "scripts":  {
+                    "dev":  "next dev --webpack",
+                    "build":  "next build --webpack",
+                    "start":  "next start"
+                },
+    "dependencies":  {
+                         "@types/node":  "latest",
+                         "@types/react":  "latest",
+                         "@types/react-dom":  "latest",
+                         "next":  "latest",
+                         "react":  "latest",
+                         "react-dom":  "latest",
+                         "typescript":  "latest"
+                     },
+    "devDependencies":  {
+
+                        }
+}

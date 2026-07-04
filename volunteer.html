@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer — Amravati Youth Festival 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230D0D0F'/%3E%3Cpath d='M8 24 L10 22 L14 12 L18 22 L20 24 L12 12 Z' fill='%23FF6A00'/%3E%3Cpath d='M10 16 L16 28 L18 24 L14 16 Z' fill='%237B2CFF'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0D0D0F;--ink2:#1A1A1A;--white:#F7F7F7;
+  --orange:#FF6A00;--purple:#7B2CFF;--lime:#C6FF00;
+  --pink:#FF2E8A;--amber:#FFC400;--teal:#00E0D1;
+  --line:rgba(247,247,247,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--ink);color:var(--white);
+  font-family:'Inter',sans-serif;overflow-x:hidden;
+  min-height:100vh;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:0.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px;}
+h1,h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;line-height:0.96;}
+.mono{font-family:'Space Mono',monospace;letter-spacing:0.1em;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:3px;}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+
+.btn{
+  font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:0.02em;
+  font-size:14px;padding:15px 28px;cursor:pointer;display:inline-block;
+  border:2px solid transparent;transition:transform .2s,box-shadow .2s;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn-solid{background:var(--orange);color:var(--ink);border-color:var(--orange);}
+.btn-outline{background:transparent;color:var(--white);border-color:var(--white);}
+.btn-ghost{background:transparent;color:rgba(247,247,247,0.7);border-color:rgba(247,247,247,0.35);}
+
+.sticker{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'Space Mono',monospace;font-size:9px;
+  text-transform:uppercase;letter-spacing:0.08em;
+  padding:5px 10px;position:relative;transform:rotate(-2deg);
+}
+.sticker::after{
+  content:"";position:absolute;inset:0;
+  border:1.5px solid currentColor;opacity:0.3;
+  clip-path:polygon(0% 0%,96% 0%,100% 6%,100% 94%,96% 100%,0% 100%,0% 94%,4% 94%,4% 6%,0% 6%);
+}
+.sticker-lime{background:var(--lime);color:var(--ink);}
+.sticker-orange{background:var(--orange);color:var(--white);}
+.sticker-ink{background:var(--ink);color:var(--white);border:1px solid var(--line);}
+.sticker-purple{background:var(--purple);color:var(--white);}
+
+header{
+  border-bottom:1px solid var(--line);
+  background:rgba(13,13,15,0.92);backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:100;
+}
+header .wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;}
+header .nav-logo img{height:32px;width:auto;}
+
+.form-section{padding:60px 0 80px;}
+.form-section h1{font-size:clamp(32px,4vw,48px);margin-bottom:8px;}
+.form-section .lede{font-size:15px;color:rgba(247,247,247,0.55);margin-bottom:36px;line-height:1.6;}
+.form-card{
+  background:var(--ink2);border:1px solid var(--line);border-radius:14px;
+  padding:40px 44px;position:relative;overflow:hidden;
+}
+.form-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--purple),var(--teal));
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{
+  font-family:'Space Mono',monospace;font-size:10px;
+  text-transform:uppercase;letter-spacing:0.08em;color:rgba(247,247,247,0.5);
+}
+.form-group label .req{color:var(--purple);}
+.form-group input,
+.form-group select,
+.form-group textarea{
+  background:var(--ink);border:1px solid var(--line);border-radius:6px;
+  padding:12px 14px;color:var(--white);font-family:'Inter',sans-serif;
+  font-size:14px;transition:border-color .2s;width:100%;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{border-color:var(--purple);outline:none;}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:rgba(247,247,247,0.25);}
+.form-group select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23F7F7F7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.form-group textarea{min-height:100px;resize:vertical;}
+
+.vol-note{
+  display:flex;flex-wrap:wrap;gap:12px;padding:16px 18px;
+  background:rgba(123,44,255,0.06);border:1px solid rgba(123,44,255,0.15);
+  border-radius:10px;font-size:13px;color:rgba(247,247,247,0.65);line-height:1.7;
+}
+.vol-note strong{color:var(--purple);}
+
+.radio-group{display:flex;gap:20px;padding:8px 0;}
+.radio-group label{all:unset;display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;color:rgba(247,247,247,0.8);text-transform:none;letter-spacing:normal;}
+.radio-group input[type="radio"]{width:16px;height:16px;accent-color:var(--purple);cursor:pointer;}
+
+.terms-box{
+  border:1px solid var(--line);border-radius:8px;padding:16px 18px;
+  margin-top:20px;max-height:160px;overflow-y:auto;
+  font-size:12px;color:rgba(247,247,247,0.45);line-height:1.7;
+}
+.terms-box strong{color:rgba(247,247,247,0.7);}
+.terms-check{display:flex;align-items:flex-start;gap:10px;margin-top:14px;}
+.terms-check input[type="checkbox"]{
+  width:18px;height:18px;margin-top:2px;flex-shrink:0;
+  accent-color:var(--purple);cursor:pointer;
+}
+.terms-check label{font-size:13px;color:rgba(247,247,247,0.7);cursor:pointer;line-height:1.5;}
+
+.form-submit{text-align:center;margin-top:32px;}
+.form-submit .note{font-size:11px;color:rgba(247,247,247,0.3);margin-top:12px;}
+
+.success-msg{display:none;text-align:center;padding:60px 24px;}
+.success-msg .check{font-size:48px;width:72px;height:72px;border-radius:50%;background:var(--purple);color:var(--white);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-family:'Anton';}
+.success-msg h2{font-size:clamp(26px,3vw,34px);margin-bottom:10px;}
+.success-msg p{font-size:15px;color:rgba(247,247,247,0.55);margin-bottom:24px;line-height:1.6;}
+
+@media(max-width:640px){
+  .form-card{padding:24px 20px;}
+  .form-grid{grid-template-columns:1fr;}
+  .radio-group{flex-direction:column;gap:10px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="nav-logo" href="ayf2026.html" aria-label="AYF Home">
+      <img src="AYF_logo_clean.png" alt="AYF">
+    </a>
+    <a class="btn btn-ghost" href="ayf2026.html" style="font-size:11px;padding:10px 18px;">Back</a>
+  </div>
+</header>
+
+<main>
+
+<section class="form-section" id="formSection">
+  <div class="wrap">
+    <div class="sticker sticker-purple" style="margin-bottom:14px;">Volunteer</div>
+    <h1>Join the <span style="color:var(--purple);">Team</span></h1>
+    <p class="lede">Be part of the team that makes AYF 2026 happen. We are looking for 100+ passionate volunteers across tech, media, hospitality, management, marketing, design, and registration.</p>
+
+    <div class="vol-note">
+      <span><strong>Commitment:</strong> Attend all assigned sessions</span>
+      <span><strong>Compensation:</strong> Purely voluntary — no monetary compensation</span>
+      <span><strong>Perks:</strong> Experience, connections, certificate &amp; free pass</span>
+    </div>
+
+    <div class="form-card" style="margin-top:28px;">
+      <form id="volForm" action="https://docs.google.com/forms/d/e/1FAIpQLSepX7-G5b6RATmh8YtVDiPwNcaW53st2J70iG2Qr1ZESJr2LA/formResponse" method="POST" target="hidden_iframe" onsubmit="return handleSubmit()">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" name="entry.2092238618" placeholder="Your full name" required>
+          </div>
+
+          <div class="form-group">
+            <label>WhatsApp Number <span class="req">*</span></label>
+            <input type="tel" name="entry.1019139433" placeholder="Enter your WhatsApp number" required>
+          </div>
+
+          <div class="form-group">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" name="entry.1556369182" placeholder="xyz@gmail.com" required>
+          </div>
+
+          <div class="form-group">
+            <label>Age <span class="req">*</span></label>
+            <input type="number" name="entry.479301265" placeholder="16 - 35" min="16" max="35" required>
+          </div>
+
+          <div class="form-group full">
+            <label>Gender <span class="req">*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="entry.1647575826" value="MALE" required> MALE</label>
+              <label><input type="radio" name="entry.1647575826" value="FEMALE"> FEMALE</label>
+              <label><input type="radio" name="entry.1647575826" value="OTHER"> OTHER</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>College / Institution <span class="req">*</span></label>
+            <input type="text" name="entry.1401600069" placeholder="Enter your college name" required>
+          </div>
+
+          <div class="form-group">
+            <label>Field / Stream of Study <span class="req">*</span></label>
+            <input type="text" name="entry.1403138662" placeholder="Science, Arts, Commerce, etc." required>
+          </div>
+
+          <div class="form-group">
+            <label>Which city do you currently live in? <span class="req">*</span></label>
+            <input type="text" name="entry.1192878501" placeholder="Your city" required>
+          </div>
+
+          <div class="form-group">
+            <label>Languages Known <span class="req">*</span></label>
+            <input type="text" name="entry.1410848207" placeholder="Marathi, Hindi, English, etc." required>
+          </div>
+
+          <div class="form-group full">
+            <label>Previous Event Experience <span class="req">*</span></label>
+            <textarea name="entry.13296338" placeholder="College Fest, Community Work, Event, etc." required></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label>Why do you want to volunteer at AYF 2026? <span class="req">*</span></label>
+            <textarea name="entry.961122328" placeholder="Your selection is based on this answer. Tell us why you want to be part of the team." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Instagram Account</label>
+            <input type="text" name="entry.1183718771" placeholder="Mention your Instagram ID">
+          </div>
+
+        </div>
+
+        <div style="margin-top:24px;">
+          <label style="font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(247,247,247,0.5);display:block;margin-bottom:8px;">Terms &amp; Conditions <span class="req">*</span></label>
+          <div class="terms-box">
+            <strong>1. Eligibility:</strong> Volunteer must be 16-35 years of age and a resident of Amravati or Vidarbha region.<br><br>
+            <strong>2. Commitment:</strong> Once registered, volunteer is expected to attend all assigned sessions without fail. Absence without prior notice will be considered a breach of commitment.<br><br>
+            <strong>3. Full Responsibility on Volunteer:</strong><br>
+            &bull; The volunteer is solely responsible for their own conduct, behavior, and actions during the festival.<br>
+            &bull; Any damage caused to property, equipment, or venue due to volunteer's negligence will be the volunteer's personal responsibility.<br>
+            &bull; Navrashtra Youth Foundation will not be held liable for any personal loss, injury, or mishap during the event.<br><br>
+            <strong>4. Punctuality &amp; Discipline:</strong> Volunteer must report on time as per assigned duty schedule. Misconduct, indiscipline, or disrespect toward guests, participants, or team members will result in immediate termination of volunteer duties.<br><br>
+            <strong>5. Confidentiality:</strong> Any internal information, guest details, or organizational data shared with the volunteer must be kept strictly confidential.<br><br>
+            <strong>6. No Monetary Compensation:</strong> Volunteering at AYF 2026 is purely on a voluntary basis. No payment, stipend, or monetary benefit will be provided.<br><br>
+            <strong>7. Media &amp; Photography:</strong> The volunteer consents to being photographed or filmed during the event. Such content may be used by Navrashtra Youth Foundation for promotional purposes.<br><br>
+            <strong>8. Code of Conduct:</strong> The volunteer agrees to maintain dignity, respect, and professionalism at all times during the festival.<br><br>
+            <strong>9. Compliance:</strong> The volunteer agrees to follow all instructions given by the festival team and Navrashtra Youth Foundation at all times.<br><br>
+            <strong>10. Agreement:</strong> By registering, the volunteer confirms that all information provided is accurate and that they have read, understood, and agreed to all the above terms and conditions.<br><br>
+            <em>Navrashtra Youth Foundation reserves the right to modify these terms at any time without prior notice.</em>
+          </div>
+          <div class="terms-check">
+            <input type="checkbox" name="entry.525587438" value="YES I Agreed to all the above terms and conditions." id="termsCheck" required>
+            <label for="termsCheck">YES I Agreed to all the above terms and conditions.</label>
+          </div>
+        </div>
+
+        <div class="form-submit">
+          <button type="submit" class="btn btn-solid" style="font-size:16px;padding:16px 48px;background:var(--purple);border-color:var(--purple);">Apply as Volunteer</button>
+          <p class="note">No monetary compensation. Volunteering is purely voluntary.</p>
+        </div>
+      </form>
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="success-msg" id="successMsg">
+  <div class="wrap">
+    <div class="check">&#10003;</div>
+    <h2>Application <span style="color:var(--purple);">Submitted!</span></h2>
+    <p>Thank you for applying to volunteer at AYF 2026. We have received your application and will review it shortly.<br><br>
+    <strong style="color:var(--purple);">What's Next:</strong> We will contact you via WhatsApp if your application is shortlisted.<br><br>
+    Follow <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener" style="color:var(--purple);text-decoration:underline;">@amravatiyouthfest</a> for updates.</p>
+    <a class="btn btn-outline" href="ayf2026.html">Back to Home</a>
+  </div>
+</section>
+
+</main>
+
+<script>
+function handleSubmit() {
+  var terms = document.getElementById('termsCheck');
+  if (!terms.checked) {
+    alert('Please agree to the Terms & Conditions.');
+    return false;
+  }
+  var form = document.getElementById('volForm');
+  var target = document.getElementById('hidden_iframe');
+  target.onload = function() {
+    document.getElementById('formSection').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  form.submit();
+  return false;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AYF 2026 — Amravati Youth Festival</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230D0D0F'/%3E%3Cpath d='M8 24 L10 22 L14 12 L18 22 L20 24 L12 12 Z' fill='%23FF6A00'/%3E%3Cpath d='M10 16 L16 28 L18 24 L14 16 Z' fill='%237B2CFF'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0D0D0F;
+  --ink2:#1A1A1A;
+  --white:#F7F7F7;
+  --orange:#FF6A00;
+  --purple:#7B2CFF;
+  --lime:#C6FF00;
+  --pink:#FF2E8A;
+  --amber:#FFC400;
+  --teal:#00E0D1;
+  --line:rgba(247,247,247,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--ink);color:var(--white);
+  font-family:'Inter',sans-serif;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;
+  opacity:0.04;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+.wrap{max-width:1280px;margin:0 auto;padding:0 32px;}
+h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;line-height:0.96;}
+.bebas{font-family:'Bebas Neue',sans-serif;text-transform:uppercase;letter-spacing:0.04em;}
+.mono{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;}
+
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--ink);}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:3px;}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+
+/* ─── PHOTO PLACEHOLDER URLs ─── */
+:root{
+  --ph1-img:url('https://picsum.photos/id/1043/600/500');
+  --ph2-img:url('https://picsum.photos/id/1044/500/400');
+  --ph3-img:url('https://picsum.photos/id/1066/550/400');
+  --gallery-1:url('https://picsum.photos/id/1049/400/400');
+  --gallery-2:url('https://picsum.photos/id/1050/400/400');
+  --gallery-3:url('https://picsum.photos/id/1051/400/400');
+  --gallery-4:url('https://picsum.photos/id/1052/400/400');
+  --gallery-5:url('https://picsum.photos/id/1053/400/400');
+  --gallery-6:url('https://picsum.photos/id/1054/400/400');
+  --gallery-7:url('https://picsum.photos/id/1055/400/400');
+  --gallery-8:url('https://picsum.photos/id/1056/400/400');
+  --insta-1:url('https://picsum.photos/id/1057/400/400');
+  --insta-2:url('https://picsum.photos/id/1058/400/400');
+  --insta-3:url('https://picsum.photos/id/1059/400/400');
+}
+
+/* ─── SCROLL REVEAL ─── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+
+/* ─── TORN PAPER ─── */
+.torn-divider{
+  position:relative;height:40px;margin-top:-20px;margin-bottom:-20px;
+  clip-path:polygon(0% 0%,2% 20%,5% 5%,8% 30%,12% 10%,16% 35%,20% 8%,24% 40%,28% 12%,32% 38%,36% 6%,40% 42%,44% 10%,48% 45%,52% 8%,56% 40%,60% 12%,64% 38%,68% 6%,72% 42%,76% 10%,80% 35%,84% 8%,88% 30%,92% 5%,96% 20%,100% 0%,100% 100%,0% 100%);
+  z-index:2;
+}
+.torn-paper{background:var(--white);}
+.torn-ink{background:var(--ink);}
+
+/* ─── GAFFER TAPE ─── */
+.gaffer-tape{
+  position:absolute;
+  background:repeating-linear-gradient(45deg,rgba(247,247,247,0.85),rgba(247,247,247,0.85) 4px,rgba(200,200,200,0.7) 4px,rgba(200,200,200,0.7) 8px);
+  box-shadow:0 4px 10px rgba(0,0,0,0.4);
+  pointer-events:none;
+  z-index:5;
+}
+.tape-orange{background:repeating-linear-gradient(45deg,rgba(255,106,0,0.8),rgba(255,106,0,0.8) 4px,rgba(200,80,0,0.6) 4px,rgba(200,80,0,0.6) 8px);}
+.tape-purple{background:repeating-linear-gradient(45deg,rgba(123,44,255,0.8),rgba(123,44,255,0.8) 4px,rgba(90,30,200,0.6) 4px,rgba(90,30,200,0.6) 8px);}
+.tape-lime{background:repeating-linear-gradient(45deg,rgba(198,255,0,0.8),rgba(198,255,0,0.8) 4px,rgba(150,200,0,0.6) 4px,rgba(150,200,0,0.6) 8px);}
+
+/* ─── HALFTONE ─── */
+.halftone-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(var(--lime) 1.4px,transparent 1.4px);
+  background-size:8px 8px;opacity:0.25;
+}
+
+/* ─── SPLATTER ─── */
+.splatter{position:absolute;pointer-events:none;}
+
+/* ─── BUTTONS ─── */
+.btn{
+  font-family:'Anton',sans-serif;text-transform:uppercase;letter-spacing:0.02em;
+  font-size:14px;padding:15px 28px;cursor:pointer;display:inline-block;
+  border:2px solid transparent;transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-2px);}
+.btn:active{transform:translateY(0);}
+.btn-solid{background:var(--orange);color:var(--ink);border-color:var(--orange);}
+.btn-outline{background:transparent;color:var(--white);border-color:var(--white);}
+.btn-ghost{background:transparent;color:rgba(247,247,247,0.7);border-color:rgba(247,247,247,0.35);}
+
+/* ─── STICKER SYSTEM ─── */
+.sticker{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:'Space Mono',monospace;font-size:9px;
+  text-transform:uppercase;letter-spacing:0.08em;
+  padding:5px 10px;position:relative;
+  transform:rotate(-2deg);
+}
+.sticker::after{
+  content:"";position:absolute;inset:0;
+  border:1.5px solid currentColor;opacity:0.3;
+  clip-path:polygon(0% 0%,96% 0%,100% 6%,100% 94%,96% 100%,0% 100%,0% 94%,4% 94%,4% 6%,0% 6%);
+}
+.sticker-lime{background:var(--lime);color:var(--ink);}
+.sticker-orange{background:var(--orange);color:var(--white);}
+.sticker-purple{background:var(--purple);color:var(--white);}
+.sticker-pink{background:var(--pink);color:var(--white);}
+.sticker-ink{background:var(--ink);color:var(--white);border:1px solid var(--line);}
+
+/* ─── HANDWRITTEN LABEL ─── */
+.handwritten{
+  font-family:'Bebas Neue',sans-serif;
+  text-transform:uppercase;letter-spacing:0.02em;
+  position:relative;display:inline-block;
+}
+.handwritten::after{
+  content:"";position:absolute;left:0;right:0;bottom:1px;
+  height:3px;background:currentColor;opacity:0.4;
+}
+
+/* ─── NAV ─── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,13,15,0.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+nav.wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;position:relative;}
+.nav-logo{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-logo svg{height:32px;width:auto;}
+.nav-links{display:flex;gap:26px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;position:absolute;left:50%;transform:translateX(-50%);}
+.nav-links a{opacity:.75;transition:opacity .2s;border-bottom:2px solid transparent;padding-bottom:4px;}
+.nav-links a:hover,.nav-links a.active{opacity:1;border-color:var(--orange);}
+.hide-mobile{display:inline-flex;flex-shrink:0;}
+.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:4px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--white);}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;padding:72px 0 48px;overflow:hidden;
+  background:radial-gradient(120% 100% at 15% 0%,#1c1420 0%,var(--ink) 55%);
+}
+.hero::after{
+  content:"";position:absolute;bottom:0;left:0;right:0;height:120px;
+  background:linear-gradient(to bottom,transparent,rgba(13,13,15,0.4));
+  pointer-events:none;
+}
+.hero-spotlight{
+  position:absolute;top:-20%;right:-10%;width:70%;height:140%;
+  background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(255,106,0,0.12),transparent 60%);
+  pointer-events:none;
+}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.hero h1{font-size:clamp(48px,6.5vw,88px);line-height:0.92;}
+.hero h1 .yr{display:block;color:var(--orange);}
+.hero .tagline{font-size:clamp(16px,2vw,22px);margin:18px 0 20px;line-height:1.3;font-family:'Bebas Neue',sans-serif;letter-spacing:0.04em;text-transform:uppercase;}
+.hero p.lede{color:rgba(247,247,247,0.65);font-size:15px;line-height:1.7;max-width:420px;margin-bottom:28px;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.deadline-label{display:block;font-family:'Space Mono',monospace;font-size:11px;color:var(--pink);letter-spacing:0.12em;}
+.hero-visual{
+  position:relative;height:480px;border-radius:14px;overflow:hidden;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 0%,rgba(123,44,255,0.5),transparent 60%),
+    radial-gradient(ellipse 70% 60% at 20% 100%,rgba(255,106,0,0.45),transparent 60%),
+    linear-gradient(180deg,#171225,#0D0D0F 70%);
+  border:1px solid var(--line);
+}
+.hero-visual .hero-image{
+  position:absolute;inset:0;object-fit:cover;width:100%;height:100%;
+}
+.badge-float{
+  position:absolute;z-index:3;text-align:center;line-height:1.35;
+  padding:14px 16px;transform:rotate(-4deg);
+  box-shadow:6px 6px 0 rgba(0,0,0,0.35);
+  font-family:'Anton';font-size:11px;letter-spacing:0.02em;
+}
+.badge-float.b1{
+  top:30px;right:26px;
+  background:var(--lime);color:var(--ink);
+}
+.badge-float.b2{
+  bottom:100px;left:20px;
+  background:var(--orange);color:var(--white);
+}
+.countdown-box{
+  position:absolute;left:20px;right:20px;bottom:20px;z-index:3;
+  background:rgba(13,13,15,0.82);backdrop-filter:blur(6px);
+  border:1px solid var(--line);padding:14px 16px;overflow:hidden;
+}
+.countdown-box .lbl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(247,247,247,0.6);margin-bottom:10px;text-align:center;font-family:'Space Mono',monospace;position:relative;z-index:1;}
+.countdown{display:flex;gap:8px;position:relative;z-index:1;}
+.countdown div{flex:1;text-align:center;}
+.countdown b{display:block;font-family:'Space Mono',monospace;font-weight:700;font-size:22px;color:var(--white);}
+.countdown span{font-size:9px;color:rgba(247,247,247,0.55);text-transform:uppercase;letter-spacing:.06em;font-family:'Space Mono',monospace;}
+
+/* ─── STAGE LIGHT EFFECTS ─── */
+.stage-haze{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%,rgba(255,106,0,0.12) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 70% at 25% 20%,rgba(123,44,255,0.08) 0%,transparent 50%),
+    radial-gradient(ellipse 60% 70% at 75% 20%,rgba(123,44,255,0.06) 0%,transparent 50%);
+}
+.stage-spotlight{
+  position:absolute;top:-20%;z-index:0;pointer-events:none;
+  width:35%;height:140%;
+  background:linear-gradient(180deg,rgba(123,44,255,0.18) 0%,rgba(123,44,255,0.06) 35%,transparent 70%);
+  filter:blur(10px);
+}
+.stage-spotlight.s1{left:-8%;transform:skewX(-10deg);}
+.stage-spotlight.s2{right:-8%;transform:skewX(10deg);}
+.stage-glow{
+  position:absolute;bottom:-1px;left:8%;right:8%;z-index:0;height:5px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--orange),transparent);
+  filter:blur(4px);opacity:0.7;
+}
+.stage-particles{
+  position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+}
+.stage-particles i{
+  position:absolute;border-radius:50%;
+  animation:particleFloat 5s ease-in-out infinite;opacity:0;
+}
+@keyframes particleFloat{
+  0%{transform:translateY(0) scale(1);opacity:0;}
+  15%{opacity:0.7;}
+  80%{opacity:0.5;}
+  100%{transform:translateY(-35px) scale(0.2);opacity:0;}
+}
+.stage-flares{
+  position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+}
+.stage-flares i{
+  position:absolute;display:block;
+  width:70px;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  transform:rotate(-25deg);opacity:0;
+  animation:flareSweep 4s ease-in-out infinite;
+}
+@keyframes flareSweep{
+  0%{transform:rotate(-25deg) translateX(-80px);opacity:0;}
+  25%{opacity:0.6;}
+  75%{opacity:0.4;}
+  100%{transform:rotate(-25deg) translateX(80px);opacity:0;}
+}
+
+
+/* ─── TICKER ─── */
+.ticker{
+  background:var(--lime);color:var(--ink);
+  padding:12px 0;overflow:hidden;white-space:nowrap;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+  position:relative;z-index:2;
+}
+.ticker-track{display:inline-block;animation:scroll 30s linear infinite;font-family:'Anton';font-size:13px;letter-spacing:.03em;}
+.ticker-track span{margin:0 18px;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@media(prefers-reduced-motion:reduce){.ticker-track{animation:none;}}
+
+/* ─── WHY AYF ─── */
+.why{
+  background:var(--white);color:var(--ink);
+  padding:100px 0;position:relative;overflow:hidden;
+}
+.why::before{
+  content:"";position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:0.3;pointer-events:none;
+}
+.why-grid{position:relative;z-index:1;display:grid;grid-template-columns:0.85fr 1.15fr;gap:48px;align-items:center;}
+.photo-stack{position:relative;height:380px;}
+.ph{
+  position:absolute;border-radius:6px;overflow:hidden;
+  box-shadow:0 14px 30px -8px rgba(0,0,0,0.2);
+  border:8px solid var(--white);background-size:cover;background-position:center;
+}
+    .ph1{width:65%;height:75%;left:0;top:0;z-index:3;background-image:var(--ph1-img);}
+  .ph2{width:50%;height:50%;right:0;top:10%;z-index:2;background-image:var(--ph2-img);}
+  .ph3{width:55%;height:42%;left:15%;bottom:0;z-index:1;background-image:var(--ph3-img);}
+  .ph .ph-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,106,0,0.15),rgba(123,44,255,0.25));pointer-events:none;}
+.tape-el{
+  position:absolute;width:70px;height:22px;opacity:.85;
+  background:repeating-linear-gradient(45deg,rgba(247,247,247,0.9),rgba(247,247,247,0.9) 4px,rgba(200,200,200,0.7) 4px,rgba(200,200,200,0.7) 8px);
+  box-shadow:0 4px 10px rgba(0,0,0,0.25);
+  z-index:5;
+}
+.tape-el.t1{top:-10px;left:22%;transform:rotate(-8deg);}
+.tape-el.t2{top:4%;right:6%;transform:rotate(10deg);}
+.tape-el.t3{bottom:-8px;left:12%;transform:rotate(-6deg);}
+
+.why h2{font-size:clamp(28px,3.4vw,38px);margin-bottom:8px;}
+.why h2 u{text-decoration:none;border-bottom:4px solid var(--orange);}
+.why p.desc{font-size:15px;line-height:1.65;color:rgba(13,13,15,0.72);max-width:480px;margin-bottom:28px;}
+.pillars{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:26px;}
+.pillar{text-align:center;width:74px;}
+.pillar .ic{
+  width:52px;height:52px;border-radius:50%;background:var(--ink);
+  color:var(--white);display:flex;align-items:center;justify-content:center;
+  font-size:16px;margin:0 auto 8px;font-family:'Anton';line-height:1;
+}
+.pillar span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+.stat-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(13,13,15,0.15);margin-top:40px;padding-top:34px;
+}
+.stat-strip div{text-align:center;}
+.stat-strip b{display:block;font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,3vw,34px);color:var(--orange);}
+.stat-strip span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(13,13,15,0.65);}
+
+/* ─── CATEGORIES ─── */
+.categories{padding:90px 0;position:relative;}
+.cat-head h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:44px;}
+.cat-head .shine{color:var(--orange);}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.cat-tile{
+  position:relative;aspect-ratio:1/0.82;border-radius:8px;overflow:hidden;
+  display:flex;align-items:flex-end;padding:14px;
+  border:1px solid var(--line);cursor:pointer;
+  transition:transform .3s;
+}
+.cat-tile:hover{transform:translateY(-4px);}
+.cat-tile .cat-bg{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center;transition:transform 0.5s;z-index:0;}
+.cat-tile .cat-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,15,0.55) 0%,rgba(13,13,15,0.2) 40%,rgba(13,13,15,0.55) 100%);}
+.cat-tile:hover .cat-bg{transform:scale(1.06);}
+.cat-tile .lbl{
+  font-family:'Anton';font-size:12px;letter-spacing:.02em;
+  background:var(--ink);color:var(--white);padding:6px 10px;
+  position:relative;z-index:2;
+}
+.cat-tile .paint-accent{
+  position:absolute;bottom:0;left:0;right:0;height:60%;
+  clip-path:polygon(0% 30%,10% 20%,20% 35%,30% 15%,40% 30%,50% 18%,60% 32%,70% 12%,80% 28%,90% 16%,100% 25%,100% 100%,0% 100%);
+  opacity:0.15;
+}
+.cat-1{background:linear-gradient(160deg,#3a2352,#1a0f28);}
+.cat-2{background:linear-gradient(160deg,#5a2e1a,#241009);}
+.cat-3{background:linear-gradient(160deg,#1c3d3a,#0c1a18);}
+.cat-4{background:linear-gradient(160deg,#3d1c34,#170a14);}
+.cat-5{background:linear-gradient(160deg,#2c2c40,#0f0f1a);}
+.cat-6{background:linear-gradient(160deg,#1f3a1c,#0c1a0a);}
+.cat-7{background:linear-gradient(160deg,#402c1c,#1a1109);}
+.cat-8{background:linear-gradient(160deg,#3a1c2c,#160a10);}
+.cat-9{background:linear-gradient(160deg,#1c2c40,#0a121c);}
+.cat-10{background:linear-gradient(160deg,#402020,#180c0c);}
+.cat-11{background:linear-gradient(160deg,#2c1c40,#110a1a);}
+.cat-12{background:linear-gradient(160deg,#303030,#111);display:flex;align-items:center;justify-content:center;}
+.cat-12 .lbl{background:transparent;color:var(--white);font-size:15px;}
+
+/* ─── JOURNEY ─── */
+.journey{padding:0 0 90px;}
+.journey h2{font-size:clamp(24px,3vw,32px);margin-bottom:48px;}
+.journey-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;position:relative;}
+.journey-row::before{content:"";position:absolute;top:24px;left:6%;right:6%;height:2px;background:var(--line);z-index:0;}
+.step{text-align:center;position:relative;z-index:1;}
+.step .dot{
+  width:48px;height:48px;border-radius:50%;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Anton';font-size:16px;
+  border:2px solid var(--ink);
+}
+.step:nth-child(1) .dot{background:var(--lime);color:var(--ink);}
+.step:nth-child(2) .dot{background:var(--purple);color:var(--white);border-color:var(--purple);}
+.step:nth-child(3) .dot{background:var(--purple);color:var(--white);border-color:var(--purple);}
+.step:nth-child(4) .dot{background:var(--orange);color:var(--white);border-color:var(--orange);}
+.step:nth-child(5) .dot{background:var(--lime);color:var(--ink);}
+.step:nth-child(6) .dot{background:var(--purple);color:var(--white);border-color:var(--purple);}
+.step:nth-child(7) .dot{background:var(--orange);color:var(--white);border-color:var(--orange);}
+.step b{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;}
+.step span{font-size:10.5px;color:rgba(247,247,247,0.55);}
+
+/* ─── EVENTS ─── */
+.events{padding:0 0 90px;}
+.events h2{font-size:clamp(24px,3vw,32px);margin-bottom:8px;}
+.events .sub{font-size:14px;color:rgba(247,247,247,0.5);margin-bottom:36px;}
+.events-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border-radius:10px;overflow:hidden;}
+.event-row{
+  display:grid;
+  grid-template-columns:140px 1fr auto;
+  align-items:center;gap:2rem;
+  padding:1.5rem 2rem;
+  background:var(--ink);
+  transition:background 0.3s;
+  cursor:default;
+  position:relative;overflow:hidden;
+}
+.event-row:hover{background:var(--ink2);}
+.event-row .tag{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--lime);
+}
+.event-row h3{font-family:'Inter';font-size:1rem;font-weight:600;text-transform:none;letter-spacing:0;line-height:1.3;}
+.event-row .arrow{
+  font-family:'Anton';font-size:1.1rem;
+  color:rgba(247,247,247,0.08);
+  transition:color 0.3s,transform 0.3s;
+}
+.event-row:hover .arrow{color:var(--orange);transform:translateX(4px);}
+
+/* ─── VOLUNTEER ─── */
+.volunteer{background:var(--white);color:var(--ink);padding:80px 0;position:relative;overflow:hidden;}
+.vol-wrap{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.vol-text h2{font-size:clamp(24px,3vw,32px);margin-bottom:8px;}
+.vol-text u{text-decoration:none;border-bottom:4px solid var(--orange);}
+.vol-text p{font-size:15px;line-height:1.65;color:rgba(13,13,15,0.72);margin-bottom:22px;}
+.vol-steps{counter-reset:step;}
+.vol-step{
+  counter-increment:step;
+  display:flex;align-items:center;gap:1.25rem;
+  padding:0.9rem 0;
+  border-bottom:1px solid rgba(13,13,15,0.08);
+}
+.vol-step:last-child{border-bottom:none;}
+.vol-step::before{
+  content:counter(step);
+  font-family:'Anton';font-size:1.5rem;
+  color:rgba(13,13,15,0.12);
+  line-height:1;width:32px;
+}
+.vol-step h4{font-size:0.9rem;font-weight:700;color:var(--ink);text-transform:none;letter-spacing:0;line-height:1.3;font-family:'Inter';}
+.vol-step p{font-size:0.78rem;color:rgba(13,13,15,0.4);margin:2px 0 0;}
+
+/* ─── GALLERY ─── */
+.gallery{padding:90px 0;position:relative;}
+.gallery-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:14px;}
+.gallery-head h2{font-size:clamp(24px,3vw,32px);}
+.polagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.pola{
+  background:var(--white);padding:10px 10px 26px;border-radius:2px;
+  position:relative;box-shadow:0 12px 26px -10px rgba(0,0,0,0.5);
+  transition:transform .3s;
+}
+.pola:nth-child(2n){transform:rotate(-2deg);}
+.pola:nth-child(2n+1){transform:rotate(2deg);}
+.pola:nth-child(3n){transform:rotate(1deg);}
+.pola:hover{transform:rotate(0deg) scale(1.02);}
+.pola .shot{aspect-ratio:1/1;border-radius:1px;background-size:cover;background-position:center;}
+
+/* ─── STATS ─── */
+.stats-bar{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.stats-item{
+  text-align:center;
+  padding:3.5rem 2rem;
+  border-right:1px solid var(--line);position:relative;
+}
+.stats-item:last-child{border-right:none;}
+.stats-item .num{
+  font-family:'Space Mono',monospace;font-weight:700;
+  font-size:3rem;line-height:1;color:var(--orange);
+}
+.stats-item .lbl{
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:rgba(247,247,247,0.3);
+  margin-top:0.5rem;display:block;
+}
+
+/* ─── VOICES ─── */
+.voices{padding:90px 0;}
+.voices h2{font-size:clamp(24px,3vw,32px);margin-bottom:36px;}
+.voice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.voice-card{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:22px;position:relative;}
+.voice-card::before{
+  content:"";position:absolute;top:-6px;left:20px;
+  width:80px;height:20px;opacity:0.6;
+  background:repeating-linear-gradient(45deg,rgba(247,247,247,0.85),rgba(247,247,247,0.85) 4px,rgba(200,200,200,0.7) 4px,rgba(200,200,200,0.7) 8px);
+  transform:rotate(-3deg);
+  clip-path:polygon(0% 20%,10% 0%,20% 30%,30% 10%,40% 35%,50% 5%,60% 25%,70% 8%,80% 28%,90% 12%,100% 20%,100% 100%,0% 100%);
+}
+.voice-card p{font-size:14px;line-height:1.6;color:rgba(247,247,247,0.85);margin-bottom:16px;}
+.voice-card p::before{content:"\201C";}
+.voice-card p::after{content:"\201D";}
+.voice-who{display:flex;align-items:center;gap:10px;}
+.voice-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Anton';font-size:13px;color:var(--ink);flex-shrink:0;}
+.voice-who b{display:block;font-size:13px;}
+.voice-who span{font-size:11px;color:rgba(247,247,247,0.5);}
+
+/* ─── PARTNERS ─── */
+.partners{padding:0 0 90px;position:relative;}
+.partners h2{font-size:clamp(22px,2.6vw,28px);margin-bottom:8px;}
+.partners .note{font-size:13px;color:rgba(247,247,247,0.5);margin-bottom:30px;}
+.partner-row{display:flex;flex-wrap:wrap;gap:14px;}
+.partner-pill{
+  border:1px solid var(--line);padding:18px 32px;
+  font-family:'Anton';font-size:16px;letter-spacing:.02em;
+  color:rgba(247,247,247,0.6);border-radius:6px;
+  transition:border-color .2s,color .2s;
+  cursor:default;position:relative;overflow:hidden;
+}
+.partner-pill:hover{border-color:var(--orange);color:var(--white);}
+
+/* ─── FAQ ─── */
+.faq{padding:90px 0;}
+.faq h2{font-size:clamp(24px,3vw,32px);margin-bottom:36px;text-align:center;}
+.faq-list{max-width:640px;margin:0 auto;}
+.faq-q{padding:1.25rem 0;border-bottom:1px solid var(--line);}
+.faq-q .trigger{
+  display:flex;justify-content:space-between;align-items:center;
+  cursor:pointer;gap:1rem;
+}
+.faq-q .trigger span:first-child{font-size:0.95rem;font-weight:600;}
+.faq-q .arrow{
+  font-family:'Anton';font-size:1.1rem;
+  color:rgba(247,247,247,0.2);
+  transition:transform 0.3s;
+  flex-shrink:0;
+}
+.faq-q .trigger.open .arrow{transform:rotate(45deg);}
+.faq-q .answer{max-height:0;overflow:hidden;transition:max-height 0.3s;}
+.faq-q .answer p{font-size:0.85rem;color:rgba(247,247,247,0.45);padding-top:0.75rem;line-height:1.7;}
+.faq-q .trigger.open+.answer{max-height:300px;}
+
+/* ─── INSTAGRAM ─── */
+.insta{padding:0 0 90px;}
+.insta-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:14px;}
+.insta-head h2{font-size:clamp(24px,3vw,32px);}
+.insta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.insta-card{
+  aspect-ratio:1;border-radius:8px;overflow:hidden;
+  background:var(--ink2);border:1px solid var(--line);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:12px;color:rgba(247,247,247,0.2);
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  transition:background 0.3s,color 0.3s;cursor:pointer;
+  background-size:cover;background-position:center;
+}
+.insta-card:hover{color:rgba(247,247,247,0.4);border-color:var(--orange);}
+.insta-card svg{width:28px;height:28px;opacity:0.25;}
+
+/* ─── CTA BAND ─── */
+.cta-band{background:linear-gradient(100deg,var(--purple),var(--orange));padding:44px 0;text-align:center;}
+.cta-band h2{font-size:clamp(26px,3.6vw,40px);color:var(--ink);margin-bottom:22px;}
+.cta-band h2 .hl{color:var(--white);}
+.cta-band .btn-black{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+/* ─── FOOTER ─── */
+footer{background:var(--ink2);padding:60px 0 30px;border-top:1px solid var(--line);position:relative;overflow:hidden;}
+footer .footer-watermark{
+  position:absolute;bottom:0;right:20px;font-family:'Anton';font-size:clamp(80px,12vw,160px);
+  color:rgba(247,247,247,0.02);pointer-events:none;line-height:0.8;user-select:none;
+}
+.footer-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:36px;padding-bottom:40px;position:relative;z-index:1;}
+.footer-brand{max-width:260px;}
+.footer-brand .nav-logo{margin-bottom:12px;}
+.footer-brand p{font-size:13px;color:rgba(247,247,247,0.4);line-height:1.6;}
+.footer-cols{display:flex;gap:60px;flex-wrap:wrap;}
+.footer-cols h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,247,247,0.45);margin-bottom:14px;font-weight:800;font-family:'Space Mono',monospace;}
+.footer-cols a{display:block;font-size:13.5px;font-weight:600;margin-bottom:10px;opacity:.85;transition:opacity .2s;}
+.footer-cols a:hover{opacity:1;}
+.footer-social{display:flex;gap:10px;margin-top:14px;}
+.footer-social a{
+  width:34px;height:34px;border:1px solid var(--line);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Anton';font-size:12px;transition:border-color .2s;
+}
+.footer-social a:hover{border-color:var(--orange);}
+.footer-bottom{
+  display:flex;justify-content:space-between;padding-top:22px;
+  border-top:1px solid var(--line);
+  font-size:12.5px;color:rgba(247,247,247,0.4);flex-wrap:wrap;gap:10px;
+}
+
+/* ─── CURSOR ─── */
+.cursor-dot{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--orange);position:fixed;pointer-events:none;
+  z-index:99999;mix-blend-mode:exclusion;
+  transform:translate(-50%,-50%);
+  transition:width 0.15s,height 0.15s,background 0.15s;
+}
+.cursor-dot.hover{width:28px;height:28px;background:var(--lime);}
+@media(hover:none),(pointer:coarse){.cursor-dot{display:none;}}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:980px){
+  .hero-grid{grid-template-columns:1fr;}
+  .hero-visual{height:380px;}
+  .why-grid{grid-template-columns:1fr;}
+  .photo-stack{height:300px;margin-bottom:20px;}
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+  .journey-row{grid-template-columns:repeat(4,1fr);row-gap:24px;}
+  .journey-row::before{display:none;}
+  .polagrid{grid-template-columns:repeat(2,1fr);}
+  .voice-grid{grid-template-columns:1fr;}
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .stats-item:nth-child(2){border-right:none;}
+  .stats-item{padding:2.5rem 1rem;}
+  .stats-item .num{font-size:2.2rem;}
+  .insta-grid{grid-template-columns:repeat(2,1fr);}
+  .vol-wrap{grid-template-columns:1fr;gap:32px;}
+  .event-row{grid-template-columns:1fr;gap:0.5rem;padding:1.25rem 1.5rem;}
+  .nav-links,.hide-mobile{display:none;}
+  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;transform:none;background:var(--ink);padding:20px 32px;border-bottom:1px solid var(--line);gap:18px;z-index:200;}
+  .hamburger{display:flex;}
+}
+@media(max-width:560px){
+  .wrap{padding:0 20px;}
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+  .polagrid{grid-template-columns:1fr 1fr;}
+  .insta-grid{grid-template-columns:1fr;}
+  section{padding-left:0;padding-right:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+
+<header>
+  <nav class="wrap">
+    <a class="nav-logo" href="#top" aria-label="AYF Home">
+      <img src="AYF_logo_clean.png" alt="AYF" style="height:40px;width:auto;">
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a class="active" href="#top">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="hide-mobile">
+      <a class="btn btn-solid" href="register.html?type=competition">Register</a>
+    </div>
+    <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-spotlight"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="sticker sticker-lime" style="margin-bottom:16px;">AYF 2026</div>
+      <h1>
+        Amravati<br>Youth<br>Festival
+        <span class="yr bebas">2026</span>
+      </h1>
+      <p class="tagline">Be the part. Lead the wave.</p>
+      <p class="lede">Three days of unlimited energy, creativity, leadership and unforgettable memories. This is not just a festival. This is who we are.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="register.html?type=competition">Register Now</a>
+        <a class="btn btn-outline" href="register.html?type=volunteer">Apply for Volunteer</a>
+        <span class="deadline-label">Auditions open till Aug 12</span>
+      </div>
+      <span class="sticker sticker-purple" style="margin-top:12px;">Follow @amravatiyouthfest</span>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-image" src="ChatGPT Image Jul 3, 2026, 11_38_09 AM.png" alt="" aria-hidden="true">
+      <div class="badge-float b1">BIGGEST<br>YOUTH MOVEMENT<br>OF AMRAVATI</div>
+      <div class="badge-float b2">LEAD THE WAVE</div>
+      <div class="gaffer-tape" style="width:100px;height:26px;top:24px;left:24px;transform:rotate(-8deg);"></div>
+      <div class="countdown-box">
+        <div class="stage-haze"></div>
+        <div class="stage-spotlight s1"></div>
+        <div class="stage-spotlight s2"></div>
+        <div class="stage-glow"></div>
+        <div class="stage-particles">
+          <i style="left:8%;top:20%;animation-delay:0s;width:2px;height:2px;background:var(--orange);"></i>
+          <i style="left:25%;top:45%;animation-delay:0.9s;width:3px;height:3px;background:var(--purple);"></i>
+          <i style="left:42%;top:15%;animation-delay:1.8s;width:2px;height:2px;background:var(--pink);"></i>
+          <i style="left:58%;top:55%;animation-delay:0.5s;width:3px;height:3px;background:var(--orange);"></i>
+          <i style="left:72%;top:25%;animation-delay:2.4s;width:2px;height:2px;background:var(--purple);"></i>
+          <i style="left:88%;top:50%;animation-delay:1.2s;width:3px;height:3px;background:var(--pink);"></i>
+          <i style="left:50%;top:70%;animation-delay:3s;width:2px;height:2px;background:var(--orange);"></i>
+          <i style="left:15%;top:65%;animation-delay:2.1s;width:2px;height:2px;background:var(--purple);"></i>
+        </div>
+        <div class="stage-flares">
+          <i style="top:25%;left:5%;animation-delay:0s;"></i>
+          <i style="top:55%;right:10%;animation-delay:2s;"></i>
+        </div>
+        <div class="lbl">AYF 2026 starts in</div>
+        <div class="countdown" id="countdown">
+          <div><b id="cd-d">00</b><span>Days</span></div>
+          <div><b id="cd-h">00</b><span>Hrs</span></div>
+          <div><b id="cd-m">00</b><span>Min</span></div>
+          <div><b id="cd-s">00</b><span>Sec</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span>LEADERSHIP</span><span>--</span><span>CREATIVITY</span><span>--</span><span>COMMUNITY</span><span>--</span><span>INNOVATION</span><span>--</span><span>MUSIC</span><span>--</span><span>SPORTS</span><span>--</span><span>TECHNOLOGY</span><span>--</span><span>ART</span><span>--</span><span>DANCE</span><span>--</span>
+    <span>LEADERSHIP</span><span>--</span><span>CREATIVITY</span><span>--</span><span>COMMUNITY</span><span>--</span><span>INNOVATION</span><span>--</span><span>MUSIC</span><span>--</span><span>SPORTS</span><span>--</span><span>TECHNOLOGY</span><span>--</span><span>ART</span><span>--</span><span>DANCE</span><span>--</span>
+  </div>
+</div>
+
+<!-- WHY AYF -->
+<section class="why reveal" id="about">
+  <div class="wrap why-grid">
+    <div class="photo-stack reveal" style="transition-delay:0.1s;">
+      <div class="tape-el t1"></div>
+      <div class="tape-el t2"></div>
+      <div class="tape-el t3"></div>
+      <div class="ph ph1"><div class="ph-overlay"></div></div>
+      <div class="ph ph2"><div class="ph-overlay"></div></div>
+      <div class="ph ph3"><div class="ph-overlay"></div></div>
+    </div>
+    <div>
+      <span class="sticker sticker-orange" style="margin-bottom:14px;">Why AYF</span>
+      <h2>Why <u>AYF</u> exists</h2>
+      <p class="desc">AYF is more than an event. It's a platform for young minds to express, compete, collaborate and create real impact. Organized by <strong>Navrashtra Youth Foundation</strong> — a city-wide movement built by youth, for youth.</p>
+      <div class="pillars">
+        <div class="pillar"><div class="ic">EX</div><span>Express</span></div>
+        <div class="pillar"><div class="ic">CN</div><span>Connect</span></div>
+        <div class="pillar"><div class="ic">LN</div><span>Learn</span></div>
+        <div class="pillar"><div class="ic">LD</div><span>Lead</span></div>
+        <div class="pillar"><div class="ic">IN</div><span>Inspire</span></div>
+      </div>
+      <a class="btn btn-outline" style="border-color:var(--ink);color:var(--ink);" href="#events">View Competitions</a>
+      <div class="stat-strip">
+        <div><b>5000+</b><span>Participants</span></div>
+        <div><b>150+</b><span>Events</span></div>
+        <div><b>30+</b><span>Colleges</span></div>
+        <div><b>100+</b><span>Volunteers</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories reveal" id="events">
+  <div class="wrap">
+    <div class="cat-head">
+      <span class="sticker sticker-pink" style="margin-bottom:14px;">Categories</span>
+      <h2>Explore. Participate. <span class="shine">Shine.</span></h2>
+      <p style="font-size:13px;color:rgba(247,247,247,0.5);margin-bottom:36px;">Five competitions open to all residents of Amravati &amp; Vidarbha. Ages 16-35.</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-tile cat-1"><div class="cat-bg" style="background-image:url('science-exhibition-banner.png');"></div><div class="paint-accent" style="background:var(--purple);"></div><span class="lbl">Science Exhibition</span></div>
+      <div class="cat-tile cat-2"><div class="cat-bg" style="background-image:url('youth-parliament-banner.png');"></div><div class="paint-accent" style="background:var(--orange);"></div><span class="lbl">Youth Parliament</span></div>
+      <div class="cat-tile cat-3"><div class="cat-bg" style="background-image:url('startup-competition-banner.png');"></div><div class="paint-accent" style="background:var(--teal);"></div><span class="lbl">Startup Competition</span></div>
+      <div class="cat-tile cat-4"><div class="cat-bg" style="background-image:url('amravtis-got-talent-banner.png');"></div><div class="paint-accent" style="background:var(--pink);"></div><span class="lbl">Amravati's Got Talent</span></div>
+      <div class="cat-tile cat-5"><div class="cat-bg" style="background-image:url('reel-competition-banner.png');"></div><span class="lbl">Reel Competition</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section class="journey reveal">
+  <div class="wrap">
+    <span class="sticker sticker-ink" style="margin-bottom:14px;">How It Works</span>
+    <h2>Your journey with AYF</h2>
+
+    <div style="margin-bottom:40px;">
+      <span class="sticker sticker-lime" style="margin-bottom:18px;">For Participants</span>
+      <div class="journey-row" style="grid-template-columns:repeat(4,1fr);">
+        <div class="step"><div class="dot">01</div><b>Register</b><span>Fill out the competition form</span></div>
+        <div class="step"><div class="dot">02</div><b>Audition</b><span>Show your skills at the venue</span></div>
+        <div class="step"><div class="dot">03</div><b>Perform</b><span>Take the stage at AYF 2026</span></div>
+        <div class="step"><div class="dot">04</div><b>Win</b><span>Trophies, certificates &amp; prizes</span></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="sticker sticker-purple" style="margin-bottom:18px;color:var(--white);">For Volunteers</span>
+      <div class="journey-row">
+        <div class="step"><div class="dot">01</div><b>Apply</b><span>Fill out the volunteer form</span></div>
+        <div class="step"><div class="dot">02</div><b>Shortlist</b><span>We review your application</span></div>
+        <div class="step"><div class="dot">03</div><b>Interview</b><span>Quick chat with the team</span></div>
+        <div class="step"><div class="dot">04</div><b>Team</b><span>Get placed in your department</span></div>
+        <div class="step"><div class="dot">05</div><b>Training</b><span>Learn, connect, prepare</span></div>
+        <div class="step"><div class="dot">06</div><b>Festival</b><span>Be the part, lead the wave</span></div>
+        <div class="step"><div class="dot">07</div><b>Certificate</b><span>Get recognized</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="events reveal">
+  <div class="wrap">
+      <span class="sticker sticker-orange" style="margin-bottom:14px;">Competitions</span>
+      <h2>What's On</h2>
+      <p class="sub"><span class="sticker sticker-pink" style="font-size:8px;padding:3px 8px;margin-right:8px;vertical-align:middle;">3 Days • Dec 18-20</span> Five competitions. One stage. ₹500 registration (pay at venue). Every participant gets a certificate &amp; free festival pass.</p>
+      <div class="events-list">
+        <div class="event-row"><span class="tag">📚</span><div><h3>Science Exhibition</h3><p style="font-size:13px;color:rgba(247,247,247,0.5);margin-top:4px;">Showcase your science projects, models and innovations</p></div><span class="arrow">--</span></div>
+        <div class="event-row"><span class="tag">🏛️</span><div><h3>Youth Parliament</h3><p style="font-size:13px;color:rgba(247,247,247,0.5);margin-top:4px;">Debate, deliberate, and discuss real-world issues</p></div><span class="arrow">--</span></div>
+        <div class="event-row"><span class="tag">🚀</span><div><h3>Startup Competition</h3><p style="font-size:13px;color:rgba(247,247,247,0.5);margin-top:4px;">Pitch your business ideas to a panel of judges</p></div><span class="arrow">--</span></div>
+        <div class="event-row"><span class="tag">🎭</span><div><h3>Amravati's Got Talent</h3><p style="font-size:13px;color:rgba(247,247,247,0.5);margin-top:4px;">Sing, dance, perform — anything goes on stage</p></div><span class="arrow">--</span></div>
+        <div class="event-row"><span class="tag">🏆</span><div><h3>Reel Competition</h3><p style="font-size:13px;color:rgba(247,247,247,0.5);margin-top:4px;">Create short-form videos — free entry, no registration fee</p></div><span class="arrow">--</span></div>
+      </div>
+    <div style="margin-top:28px;padding:18px 20px;background:rgba(255,106,0,0.06);border:1px solid rgba(255,106,0,0.15);border-radius:10px;font-size:13px;color:rgba(247,247,247,0.65);line-height:1.7;">
+      <strong style="color:var(--orange);">Important:</strong> ₹500 registration fee payable at the audition venue. No fee for final performance. Reel Competition is free. Winners receive trophies, certificates &amp; prizes. All participants get a participation certificate &amp; free AYF 2026 pass.
+    </div>
+  </div>
+</section>
+
+<!-- VOLUNTEER -->
+<section class="volunteer reveal">
+  <div class="halftone-bg"></div>
+  <div class="wrap">
+    <div class="vol-wrap">
+      <div class="vol-text">
+        <span class="sticker sticker-purple" style="margin-bottom:14px;color:var(--white);">Join the Team</span>
+        <h2>Be Part of <u>the Team</u></h2>
+        <p>Join 100+ volunteers who make AYF happen. From tech to hospitality, marketing to stage management — every role matters.</p>
+        <div style="font-size:13px;color:rgba(13,13,15,0.6);line-height:1.7;margin-bottom:22px;padding:14px 16px;background:rgba(255,106,0,0.06);border-radius:8px;">
+          <strong>Note:</strong> Volunteering at AYF is a purely voluntary commitment — no monetary compensation is provided. Volunteers are expected to attend all assigned sessions, maintain professionalism, and adhere to the code of conduct.
+        </div>
+        <a class="btn btn-solid" href="register.html?type=volunteer">Apply as Volunteer</a>
+      </div>
+      <div class="vol-steps">
+        <div class="vol-step"><div><h4>Application</h4><p>Fill out the volunteer form</p></div></div>
+        <div class="vol-step"><div><h4>Interview</h4><p>Quick chat with the team</p></div></div>
+        <div class="vol-step"><div><h4>Department</h4><p>Assigned to your preferred team</p></div></div>
+        <div class="vol-step"><div><h4>Training</h4><p>Learn the ropes and meet your crew</p></div></div>
+        <div class="vol-step"><div><h4>Festival</h4><p>Make it happen on the ground</p></div></div>
+        <div class="vol-step"><div><h4>Certificate</h4><p>Get recognized for your contribution</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery reveal" id="gallery">
+  <div class="wrap">
+    <div class="gallery-head">
+      <span class="sticker sticker-lime" style="margin-bottom:0;">Memories</span>
+      <h2>Memories that stay</h2>
+      <a class="btn btn-ghost" href="#gallery">View gallery --</a>
+    </div>
+    <div class="polagrid">
+      <div class="pola" style="transform:rotate(-3deg);"><div class="shot" style="background-image:var(--gallery-1);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(2deg);"><div class="shot" style="background-image:var(--gallery-2);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(4deg);"><div class="shot" style="background-image:var(--gallery-3);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(-2deg);"><div class="shot" style="background-image:var(--gallery-4);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(1deg);"><div class="shot" style="background-image:var(--gallery-5);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(-4deg);"><div class="shot" style="background-image:var(--gallery-6);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(3deg);"><div class="shot" style="background-image:var(--gallery-7);background-size:cover;background-position:center;"></div></div>
+      <div class="pola" style="transform:rotate(-1deg);"><div class="shot" style="background-image:var(--gallery-8);background-size:cover;background-position:center;"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+  <div class="stats-bar">
+    <div class="stats-item"><div class="num" data-target="5000">0</div><span class="lbl">Participants</span></div>
+    <div class="stats-item"><div class="num" data-target="150">0</div><span class="lbl">Events</span></div>
+    <div class="stats-item"><div class="num" data-target="30">0</div><span class="lbl">Colleges</span></div>
+    <div class="stats-item"><div class="num" data-target="100">0</div><span class="lbl">Volunteers</span></div>
+  </div>
+</section>
+
+<!-- VOICES -->
+<section class="voices reveal">
+  <div class="wrap">
+    <span class="sticker sticker-pink" style="margin-bottom:14px;">Testimonials</span>
+    <h2>Voices of AYF</h2>
+    <div class="voice-grid">
+      <div class="voice-card">
+        <p>AYF changed me. It gave me a platform to grow and lead.</p>
+        <div class="voice-who">
+          <div class="voice-avatar" style="background:var(--lime);color:var(--ink);">RS</div>
+          <div><b>Rohan S.</b><span>Volunteer</span></div>
+        </div>
+      </div>
+      <div class="voice-card">
+        <p>Performing at AYF was the best experience of my life.</p>
+        <div class="voice-who">
+          <div class="voice-avatar" style="background:var(--orange);color:var(--ink);">SP</div>
+          <div><b>Sneha P.</b><span>Performer</span></div>
+        </div>
+      </div>
+      <div class="voice-card">
+        <p>The energy, the people, the memories -- absolutely unmatched.</p>
+        <div class="voice-who">
+          <div class="voice-avatar" style="background:var(--purple);color:var(--white);">VK</div>
+          <div><b>Viraj K.</b><span>Participant</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="partners reveal" id="sponsors">
+  <div class="wrap">
+    <span class="sticker sticker-amber" style="margin-bottom:14px;color:var(--ink);">Sponsors</span>
+    <h2>Our Partners</h2>
+    <p class="note">Replace with confirmed sponsor logos.</p>
+    <div class="partner-row">
+      <span class="partner-pill">NOVA</span>
+      <span class="partner-pill">PULSE FM</span>
+      <span class="partner-pill">URBAN EDGE</span>
+      <span class="partner-pill">BREW CO.</span>
+      <span class="partner-pill">SWIFTPAY</span>
+      <span class="partner-pill">ORBIT</span>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq reveal" id="faq">
+  <div class="wrap">
+    <span class="sticker sticker-orange" style="margin-bottom:14px;">Help</span>
+    <h2>Got Questions?</h2>
+    <div class="faq-list">
+      <div class="faq-q">
+        <div class="trigger">
+          <span>How do I register?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>Click the Register button and fill out the registration form with your details. Select which competition you want to participate in. The ₹500 registration fee is payable at the audition venue.</p><p style="margin-top:8px;"><a href="register.html?type=competition" style="color:var(--orange);text-decoration:underline;">Open Registration Form →</a></p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>What competitions are there?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>Five competitions: <strong>Science Exhibition</strong> — showcase your projects and innovations, <strong>Youth Parliament</strong> — debate real-world issues, <strong>Startup Competition</strong> — pitch your business ideas, <strong>Amravati's Got Talent</strong> — sing, dance, or perform, and <strong>Reel Competition</strong> — create short-form videos. Reel Competition has no registration fee.</p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>Who can participate?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>Open to all residents of Amravati &amp; Vidarbha region aged 16-35. Participants below 18 need written parental/guardian consent. There is no educational qualification requirement — students, graduates, and working professionals are all welcome.</p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>Will I get a certificate?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>Yes. Every registered participant gets a <strong>participation certificate</strong> and a <strong>free pass</strong> to AYF 2026. Selected participants get to perform at the main festival stage. Winners receive trophies, certificates, and prizes.</p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>Can I volunteer?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>Absolutely. We are looking for 100+ volunteers across tech, media, hospitality, management, marketing, design, and registration departments. Fill out the volunteer application form and our team will review it. Volunteering is a purely voluntary commitment with no monetary compensation. Volunteers are expected to attend all assigned sessions, maintain professionalism, and follow the code of conduct.</p><p style="margin-top:8px;"><a href="register.html?type=volunteer" style="color:var(--orange);text-decoration:underline;">Apply as Volunteer →</a></p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>Who organizes AYF?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>AYF 2026 is organized by <strong>Navrashtra Youth Foundation</strong> — a youth-driven organization dedicated to creating platforms for young talent in the Amravati &amp; Vidarbha region. The foundation works year-round to identify, nurture, and showcase local youth potential through events, competitions, and leadership programs.</p></div>
+      </div>
+      <div class="faq-q">
+        <div class="trigger">
+          <span>When and where is AYF 2026?</span>
+          <span class="arrow">+</span>
+        </div>
+        <div class="answer"><p>AYF 2026 runs <strong>December 18–20, 2026</strong> in Amravati. Three days of competitions, performances, and celebrations. The exact venue will be announced closer to the date — stay tuned on Instagram <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener" style="color:var(--orange);text-decoration:underline;">@amravatiyouthfest</a> for updates.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM -->
+<section class="insta reveal">
+  <div class="wrap">
+    <div class="insta-head">
+      <span class="sticker sticker-purple" style="margin-bottom:0;">Social</span>
+      <h2>Follow the Fest</h2>
+      <a class="btn btn-outline" href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener">@amravatiyouthfest --</a>
+    </div>
+    <div class="insta-grid">
+      <div class="insta-card" style="background-image:var(--insta-1);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span>Latest Post</span>
+      </div>
+      <div class="insta-card" style="background-image:var(--insta-2);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span>Latest Post</span>
+      </div>
+      <div class="insta-card" style="background-image:var(--insta-3);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        <span>Latest Post</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- CTA BAND -->
+<div class="cta-band">
+  <div class="wrap">
+    <div class="sticker sticker-ink" style="margin-bottom:16px;">Registrations Open</div>
+    <h2>Registrations are <span class="hl">open!</span></h2>
+    <a class="btn btn-black" href="register.html?type=competition">Register Now --</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="footer-watermark">AYF</div>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="nav-logo" href="#top">
+          <img src="AYF_logo_clean.png" alt="AYF" style="height:32px;width:auto;">
+        </a>
+        <p>A city-wide celebration of youth, talent, creativity, and leadership. Built by students, for students.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="YouTube">YT</a>
+          <a href="#" aria-label="Twitter/X">X</a>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>Explore</h4>
+          <a href="#about">About us</a>
+          <a href="#events">Event details</a>
+          <a href="#gallery">Gallery</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <h4>Join</h4>
+          <a href="register.html?type=competition">Register</a>
+          <a href="register.html?type=competition">Auditions</a>
+          <a href="register.html?type=volunteer">Volunteer</a>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/amravatiyouthfest/" target="_blank" rel="noopener">Instagram</a>
+          <a href="mailto:hello@amravatiyouthfest.com">Email</a>
+          <a href="#">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Amravati Youth Festival. Organized by Navrashtra Youth Foundation.</span>
+      <span>AYF 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const target = new Date("2026-12-18T09:00:00+05:30").getTime();
+function tick(){
+  const now = Date.now();
+  let diff = target - now;
+  if(diff < 0) diff = 0;
+  const d = Math.floor(diff/(1000*60*60*24));
+  const h = Math.floor((diff/(1000*60*60))%24);
+  const m = Math.floor((diff/(1000*60))%60);
+  const s = Math.floor((diff/1000)%60);
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('cd-d').textContent = pad(d);
+  document.getElementById('cd-h').textContent = pad(h);
+  document.getElementById('cd-m').textContent = pad(m);
+  document.getElementById('cd-s').textContent = pad(s);
+}
+tick();
+setInterval(tick, 1000);
+
+const counters = document.querySelectorAll('.stats-item .num');
+const counterObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const t = parseInt(el.dataset.target);
+      let cur = 0;
+      const step = Math.ceil(t / 60);
+      const int = setInterval(() => {
+        cur += step;
+        if (cur >= t) { cur = t; clearInterval(int); }
+        el.textContent = cur + (t >= 1000 ? '+' : '');
+      }, 25);
+      counterObs.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObs.observe(c));
+
+const cursor = document.getElementById('cursorDot');
+let cursorVisible = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+if (cursorVisible) {
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.btn,.cat-tile,.insta-card,.partner-pill,.faq-q .trigger,.sticker').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+  });
+}
+
+document.querySelectorAll('.faq-q .trigger').forEach(t => {
+  t.addEventListener('click', function(){
+    const answer = this.nextElementSibling;
+    if (this.classList.contains('open')) {
+      answer.style.maxHeight = '0';
+    } else {
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+    this.classList.toggle('open');
+  });
+});
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function playClick() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.frequency.value = 660;
+  osc.type = 'sine';
+  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.08);
+}
+document.querySelectorAll('a,.btn,.cat-tile,.insta-card,.partner-pill').forEach(el => {
+  el.addEventListener('mouseenter', playClick, { once: true });
+  el.addEventListener('click', () => {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+  });
+});
+
+console.log('AYF 2026 — Paint, tape & torn paper on a near-black stage.');
+</script>
+
+</body>
+</html>
