@@ -4,7 +4,7 @@ import Ticker from '@/components/Ticker';
 import WhyAYF from '@/components/WhyAYF';
 import EventCategories from '@/components/EventCategories';
 import Journey from '@/components/Journey';
-import EventsList from '@/components/EventsList';
+
 import VolunteerSection from '@/components/VolunteerSection';
 import Gallery from '@/components/Gallery';
 import Instagram from '@/components/Instagram';
@@ -28,7 +28,6 @@ export default function HomePage() {
         <EventCategories />
         <WhyAYF />
         <Journey />
-        <EventsList />
         <VolunteerSection />
         <Gallery />
         <Instagram />
