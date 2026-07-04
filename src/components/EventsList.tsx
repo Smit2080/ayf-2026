@@ -28,7 +28,7 @@ export default function EventsList() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 28, padding: '18px 20px', background: 'rgba(255,106,0,0.06)', border: '1px solid rgba(255,106,0,0.15)', borderRadius: 10, fontSize: 13, color: 'rgba(247,247,247,0.65)', lineHeight: 1.7 }}>
+        <div style={{ marginTop: 28, padding: '18px 20px', background: 'rgba(255,184,0,0.06)', border: '1px solid rgba(255,184,0,0.15)', borderRadius: 10, fontSize: 13, color: 'rgba(247,247,247,0.65)', lineHeight: 1.7 }}>
           <strong style={{ color: 'var(--orange)' }}>Important:</strong> Rs.500 registration fee payable at the audition venue. No fee for final performance. Reel Competition is free. Winners receive trophies, certificates &amp; prizes. All participants get a participation certificate &amp; free AYF 2026 pass.
         </div>
       </div>

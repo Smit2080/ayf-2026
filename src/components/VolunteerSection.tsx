@@ -8,7 +8,7 @@ export default function VolunteerSection() {
             <span className="sticker sticker-purple" style={{ marginBottom: 14, color: 'var(--white)' }}>Join the Team</span>
             <h2>Be Part of <u>the Team</u></h2>
             <p>Join 100+ volunteers who make AYF happen. From tech to hospitality, marketing to stage management - every role matters.</p>
-            <div style={{ fontSize: 13, color: 'rgba(13,13,15,0.6)', lineHeight: 1.7, marginBottom: 22, padding: '14px 16px', background: 'rgba(255,106,0,0.06)', borderRadius: 8 }}>
+            <div style={{ fontSize: 13, color: 'rgba(13,13,15,0.6)', lineHeight: 1.7, marginBottom: 22, padding: '14px 16px', background: 'rgba(255,184,0,0.06)', borderRadius: 8 }}>
               <strong>Note:</strong> Volunteering at AYF is a purely voluntary commitment - no monetary compensation is provided. Volunteers are expected to attend all assigned sessions, maintain professionalism, and adhere to the code of conduct.
             </div>
             <a className="btn btn-solid" href="/register?type=volunteer">Apply as Volunteer</a>
