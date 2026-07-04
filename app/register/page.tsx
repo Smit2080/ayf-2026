@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -11,8 +11,6 @@ type Submitted = 'comp' | 'vol' | null;
 function RegisterContent() {
   const supabase = createClient();
   const searchParams = useSearchParams();
-  const router = useRouter();
-
   const initialTab: Tab = searchParams.get('type') === 'volunteer' ? 'volunteer' : 'competition';
   const [tab, setTab] = useState<Tab>(initialTab);
   const [success, setSuccess] = useState<Submitted>(null);

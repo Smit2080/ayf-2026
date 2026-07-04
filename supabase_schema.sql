@@ -7,6 +7,7 @@ create table public.profiles (
   age int not null,
   college text not null,
   stream text not null,
+  role text not null default 'user',
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -21,6 +22,10 @@ create policy "Users can update their own profile" on public.profiles
 
 create policy "Users can insert their own profile" on public.profiles
   for insert with check (auth.uid() = id);
+
+-- Admin override policies
+create policy "Admins can view all profiles" on public.profiles
+  for select using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
 
 -- Create competitions table
 create table public.competitions (
@@ -41,6 +46,13 @@ create policy "Users can view their own competitions" on public.competitions
 
 create policy "Users can insert their own competitions" on public.competitions
   for insert with check (auth.uid() = user_id);
+
+-- Admin override policies
+create policy "Admins can view all competitions" on public.competitions
+  for select using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+create policy "Admins can update competitions" on public.competitions
+  for update using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
 
 -- Create volunteers table
 create table public.volunteers (
@@ -64,3 +76,10 @@ create policy "Users can view their own volunteer application" on public.volunte
 
 create policy "Users can insert their own volunteer application" on public.volunteers
   for insert with check (auth.uid() = user_id);
+
+-- Admin override policies
+create policy "Admins can view all volunteers" on public.volunteers
+  for select using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));
+
+create policy "Admins can update volunteers" on public.volunteers
+  for update using (exists (select 1 from public.profiles where id = auth.uid() and role = 'admin'));

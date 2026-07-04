@@ -1,21 +1,19 @@
 {
-    "scripts":  {
-                    "dev":  "next dev --webpack",
-                    "build":  "next build --webpack",
-                    "start":  "next start"
-                },
-    "dependencies":  {
-                         "@types/node":  "latest",
-                         "@types/react":  "latest",
-                         "@types/react-dom":  "latest",
-                         "next":  "latest",
-                         "react":  "latest",
-                         "react-dom":  "latest",
-                         "typescript":  "latest",
-                         "@supabase/supabase-js": "^2.43.0",
-                         "@supabase/ssr": "^0.3.0"
-                     },
-    "devDependencies":  {
-
-                        }
+    "scripts": {
+        "dev": "next dev --webpack",
+        "build": "next build --webpack",
+        "start": "next start"
+    },
+    "dependencies": {
+        "@supabase/ssr": "^0.3.0",
+        "@supabase/supabase-js": "^2.43.0",
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "next": "latest",
+        "react": "latest",
+        "react-dom": "latest",
+        "typescript": "latest",
+        "xlsx": "^0.18.5"
+    }
 }
