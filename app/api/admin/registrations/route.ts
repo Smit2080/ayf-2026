@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from('competitions')
-    .select('*, profiles!inner(*)', { count: 'exact' });
+    .select('*', { count: 'exact' });
 
   if (statusFilter) {
     query = query.eq('status', statusFilter);
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
 
   if (search) {
     query = query.or(
-      `profiles.full_name.ilike.%${search}%,competition_name.ilike.%${search}%,profiles.email.ilike.%${search}%`
+      `competition_name.ilike.%${search}%`
     );
   }
 
@@ -38,8 +38,35 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  const userIds = [...new Set((data || []).map(r => r.user_id).filter(Boolean))];
+  const profileMap: Record<string, any> = {};
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds);
+    for (const p of profiles || []) {
+      profileMap[p.id] = p;
+    }
+  }
+
+  const merged = (data || []).map(r => ({
+    ...r,
+    profiles: profileMap[r.user_id] || null,
+  }));
+
+  const filtered = search
+    ? merged.filter(r => {
+        const p = r.profiles || {};
+        return (
+          (p.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
+          (p.email || '').toLowerCase().includes(search.toLowerCase())
+        );
+      })
+    : merged;
+
   return NextResponse.json({
-    data: data || [],
+    data: filtered,
     total: count ?? 0,
     page,
     perPage,

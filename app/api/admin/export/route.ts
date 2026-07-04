@@ -18,42 +18,68 @@ export async function GET(request: NextRequest) {
   if (type === 'registrations') {
     const { data } = await supabase
       .from('competitions')
-      .select('*, profiles!inner(full_name, email, whatsapp_number, age, college, stream)')
+      .select('*')
       .order('created_at', { ascending: false });
 
-    rows = (data || []).map((r: any) => ({
-      'Full Name': r.profiles?.full_name || '',
-      Email: r.profiles?.email || '',
-      WhatsApp: r.profiles?.whatsapp_number || '',
-      Age: r.profiles?.age || '',
-      College: r.profiles?.college || '',
-      Stream: r.profiles?.stream || '',
-      Competition: r.competition_name,
-      'Performance Details': r.performance_details,
-      Status: r.status,
-      'Audition Slot': r.audition_slot || '',
-      'Registered At': new Date(r.created_at).toLocaleDateString('en-IN'),
-    }));
+    const userIds = [...new Set((data || []).map(r => r.user_id).filter(Boolean))];
+    const profileMap: Record<string, any> = {};
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', userIds);
+      for (const p of profiles || []) profileMap[p.id] = p;
+    }
+
+    rows = (data || []).map((r: any) => {
+      const prof = profileMap[r.user_id] || {};
+      return {
+        'Full Name': prof.full_name || '',
+        Email: prof.email || '',
+        WhatsApp: prof.whatsapp_number || '',
+        Age: prof.age || '',
+        College: prof.college || '',
+        Stream: prof.stream || '',
+        Competition: r.competition_name,
+        'Performance Details': r.performance_details,
+        Status: r.status,
+        'Audition Slot': r.audition_slot || '',
+        'Registered At': new Date(r.created_at).toLocaleDateString('en-IN'),
+      };
+    });
     filename = 'registrations';
   } else if (type === 'volunteers') {
     const { data } = await supabase
       .from('volunteers')
-      .select('*, profiles!inner(full_name, email, whatsapp_number)')
+      .select('*')
       .order('created_at', { ascending: false });
 
-    rows = (data || []).map((r: any) => ({
-      'Full Name': r.profiles?.full_name || '',
-      Email: r.profiles?.email || '',
-      WhatsApp: r.profiles?.whatsapp_number || '',
-      Gender: r.gender,
-      City: r.city,
-      Languages: r.languages,
-      Experience: r.experience,
-      'Why Volunteer': r.why_volunteer,
-      'Instagram ID': r.instagram_id || '',
-      Status: r.status,
-      'Applied At': new Date(r.created_at).toLocaleDateString('en-IN'),
-    }));
+    const userIds = [...new Set((data || []).map(r => r.user_id).filter(Boolean))];
+    const profileMap: Record<string, any> = {};
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('id', userIds);
+      for (const p of profiles || []) profileMap[p.id] = p;
+    }
+
+    rows = (data || []).map((r: any) => {
+      const prof = profileMap[r.user_id] || {};
+      return {
+        'Full Name': prof.full_name || '',
+        Email: prof.email || '',
+        WhatsApp: prof.whatsapp_number || '',
+        Gender: r.gender,
+        City: r.city,
+        Languages: r.languages,
+        Experience: r.experience,
+        'Why Volunteer': r.why_volunteer,
+        'Instagram ID': r.instagram_id || '',
+        Status: r.status,
+        'Applied At': new Date(r.created_at).toLocaleDateString('en-IN'),
+      };
+    });
     filename = 'volunteers';
   } else if (type === 'profiles') {
     const { data } = await supabase
