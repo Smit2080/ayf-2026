@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const AdminButton = dynamic(() => import('@/components/AdminButton'), { ssr: false });
 
 export default function Navbar() {
   useEffect(() => {
@@ -54,8 +56,9 @@ export default function Navbar() {
           <li><a href="#social">Social</a></li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
-        <div className="hide-mobile">
+        <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center' }}>
           <a className="btn btn-solid" href="/register?type=competition">Register</a>
+          <AdminButton />
         </div>
         <button className="hamburger" aria-label="Menu">
           <span /><span /><span />
