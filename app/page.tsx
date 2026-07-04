@@ -28,6 +28,7 @@ export default function HomePage() {
         <EventCategories />
         <WhyAYF />
         <Journey />
+        <CTA />
         <VolunteerSection />
         <Gallery />
         <Instagram />
@@ -37,7 +38,6 @@ export default function HomePage() {
         <FAQSection />
       </main>
 
-      <CTA />
       <Footer />
 
       <div className="toast">Frontend demo: saved locally</div>
