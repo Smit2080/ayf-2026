@@ -55,10 +55,7 @@ export default function Navbar() {
           <li><a href="#events">Events</a></li>
           <li><a href="#social">Social</a></li>
           <li><a href="#faq">FAQ</a></li>
-          <li className="mobile-only" style={{ borderTop: '1px solid var(--line)', marginTop: 6, paddingTop: 6 }}>
-            <a href="/register?type=competition" style={{ color: 'var(--orange)', fontWeight: 700 }}>Register</a>
-          </li>
-          <li className="mobile-only" id="mobileAdminItem">
+          <li className="mobile-only" style={{ borderTop: '1px solid var(--line)', marginTop: 6, paddingTop: 6 }} id="mobileAdminItem">
             <AdminButton mobile />
           </li>
         </ul>
