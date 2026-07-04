@@ -34,13 +34,15 @@ export default function WhyAYF() {
         </div>
 
         <div className="partner-grid">
-          {partners.map((p) => (
-            <div className="partner-card" key={p.name}>
-              <span className="partner-cat">{p.category}</span>
-              <span className="partner-name">{p.name}</span>
-              <span className="partner-sub">{p.sub}</span>
-            </div>
-          ))}
+          <div className="partner-track">
+            {[...partners, ...partners].map((p, i) => (
+              <div className="partner-card" key={`${p.name}-${i}`}>
+                <span className="partner-cat">{p.category}</span>
+                <span className="partner-name">{p.name}</span>
+                <span className="partner-sub">{p.sub}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
