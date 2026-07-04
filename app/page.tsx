@@ -4,9 +4,7 @@ import Ticker from '@/components/Ticker';
 import WhyAYF from '@/components/WhyAYF';
 import EventCategories from '@/components/EventCategories';
 import Journey from '@/components/Journey';
-
 import VolunteerSection from '@/components/VolunteerSection';
-import Gallery from '@/components/Gallery';
 import Instagram from '@/components/Instagram';
 import StatsCounter from '@/components/StatsCounter';
 import Testimonials from '@/components/Testimonials';
@@ -26,10 +24,13 @@ export default function HomePage() {
         <Ticker />
         <EventCategories />
         <WhyAYF />
-        <Journey />
-        <CTA />
-        <VolunteerSection />
-        <Gallery />
+        <div className="blend-group">
+          <Journey />
+          <div className="blend-bar blend-bar--dark-purple" />
+          <CTA />
+          <div className="blend-bar blend-bar--purple-white" />
+          <VolunteerSection />
+        </div>
         <Instagram />
         <StatsCounter />
         <Testimonials />
