@@ -618,10 +618,7 @@ function SuccessPanel({ tone, title, highlight, body }: { tone: 'comp' | 'vol'; 
             {body}
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link className="btn btn-solid" href="/dashboard" style={{ background: tone === 'comp' ? 'var(--orange)' : 'var(--purple)', borderColor: tone === 'comp' ? 'var(--orange)' : 'var(--purple)' }}>
-              Go to Dashboard
-            </Link>
-            <Link className="btn btn-outline" href="/">
+            <Link className="btn btn-solid" href="/" style={{ background: tone === 'comp' ? 'var(--orange)' : 'var(--purple)', borderColor: tone === 'comp' ? 'var(--orange)' : 'var(--purple)' }}>
               Back to Home
             </Link>
           </div>
