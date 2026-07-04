@@ -9,7 +9,6 @@ import Instagram from '@/components/Instagram';
 import StatsCounter from '@/components/StatsCounter';
 import Testimonials from '@/components/Testimonials';
 import FAQSection from '@/components/FAQ';
-import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
@@ -24,11 +23,8 @@ export default function HomePage() {
         <Ticker />
         <EventCategories />
         <WhyAYF />
-        <section className="journey-cta-vol">
-          <Journey />
-          <CTA />
-          <VolunteerSection />
-        </section>
+        <Journey />
+        <VolunteerSection />
         <Instagram />
         <StatsCounter />
         <Testimonials />
