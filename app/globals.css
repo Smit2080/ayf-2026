@@ -299,6 +299,13 @@ nav.wrap{display:flex;align-items:center;justify-content:space-between;padding:1
 }
 .why-grid{position:relative;z-index:1;display:grid;grid-template-columns:0.85fr 1.15fr;gap:48px;align-items:center;}
 .why-grid-single{position:relative;z-index:1;max-width:600px;}
+.sponsor-greetings-col{padding-left:24px;border-left:2px solid rgba(13,13,15,0.1);}
+.sponsor-greeting-wrap{overflow:hidden;height:200px;position:relative;border-radius:10px;background:rgba(123,44,255,0.04);padding:12px;}
+.sponsor-greeting-track{display:flex;flex-direction:column;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);height:100%;}
+.sponsor-greeting-card{display:flex;align-items:center;gap:14px;height:100%;flex-shrink:0;padding:8px 4px;}
+.sponsor-logo-circle{width:44px;height:44px;border-radius:50%;background:var(--purple);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:'Anton';font-size:18px;flex-shrink:0;}
+.sponsor-name{font-family:'Anton';font-size:15px;letter-spacing:.03em;color:var(--ink);}
+.sponsor-msg{font-size:12px;color:rgba(13,13,15,0.6);margin-top:2px;}
 
 .why h2{font-size:clamp(28px,3.4vw,38px);margin-bottom:8px;}
 .why h2 u{text-decoration:none;border-bottom:4px solid var(--orange);}
