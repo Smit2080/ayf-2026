@@ -27,6 +27,7 @@ export default function Hero() {
 
   return (
     <section className="hero">
+      <div className="hero-purple-glow" />
       <div className="hero-spotlight" />
       <div className="wrap hero-grid">
         <div>

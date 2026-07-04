@@ -165,6 +165,21 @@ nav.wrap{display:flex;align-items:center;justify-content:space-between;padding:1
   background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(255,184,0,0.12),transparent 60%);
   pointer-events:none;
 }
+.hero-purple-glow{
+  position:absolute;top:-40%;left:-30%;width:160%;height:200%;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 50% 40% at 30% 40%,rgba(123,44,255,0.35),transparent 60%),
+    radial-gradient(ellipse 40% 50% at 70% 60%,rgba(123,44,255,0.2),transparent 50%),
+    radial-gradient(ellipse 30% 40% at 50% 20%,rgba(160,80,255,0.25),transparent 50%);
+  filter:blur(80px);
+  animation:purpleGlow 14s ease-in-out infinite alternate;
+}
+@keyframes purpleGlow{
+  0%{transform:translate(-8%,-5%) scale(1);opacity:0.7;}
+  33%{transform:translate(6%,2%) scale(1.15);opacity:1;}
+  66%{transform:translate(2%,8%) scale(0.9);opacity:0.8;}
+  100%{transform:translate(-5%,-2%) scale(1.1);opacity:0.9;}
+}
 .hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
 .hero h1{font-size:clamp(48px,6.5vw,88px);line-height:0.92;}
 .hero h1 .yr{display:block;color:var(--orange);}
