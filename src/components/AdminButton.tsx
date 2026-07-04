@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export default function AdminButton() {
+export default function AdminButton({ mobile }: { mobile?: boolean }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -24,6 +24,23 @@ export default function AdminButton() {
   }, []);
 
   if (!isAdmin) return null;
+
+  if (mobile) {
+    return (
+      <Link
+        href="/admin"
+        style={{
+          color: 'var(--pink)',
+          fontWeight: 700,
+          fontSize: 12,
+          display: 'block',
+          padding: '4px 0',
+        }}
+      >
+        Admin Panel
+      </Link>
+    );
+  }
 
   return (
     <Link

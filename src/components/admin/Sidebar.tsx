@@ -26,30 +26,49 @@ function NavIcon({ type }: { type: string }) {
   }
 }
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onToggle, isMobile }: { isOpen: boolean; onToggle: () => void; isMobile: boolean }) {
   const path = usePathname();
 
+  const sidebarStyle: React.CSSProperties = isMobile ? {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100vh',
+    zIndex: 50,
+    width: 240,
+    flexShrink: 0,
+    background: 'rgba(13,13,15,0.96)',
+    borderRight: '1px solid var(--line)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    backdropFilter: 'blur(12px)',
+    transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+    transition: 'transform 0.25s ease',
+  } : {
+    width: 220,
+    flexShrink: 0,
+    background: 'rgba(13,13,15,0.85)',
+    borderRight: '1px solid var(--line)',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'sticky',
+    top: 0,
+    height: '100vh',
+    overflow: 'hidden',
+    zIndex: 2,
+    backdropFilter: 'blur(12px)',
+  };
+
   return (
-    <aside style={{
-      width: 220,
-      flexShrink: 0,
-      background: 'rgba(13,13,15,0.85)',
-      borderRight: '1px solid var(--line)',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'sticky',
-      top: 0,
-      height: '100vh',
-      overflow: 'hidden',
-      zIndex: 2,
-      backdropFilter: 'blur(12px)',
-    }}>
+    <aside style={sidebarStyle}>
       <div style={{
         padding: '22px 20px 18px',
         borderBottom: '1px solid var(--line)',
         display: 'flex',
         alignItems: 'center',
         gap: 10,
+        justifyContent: isMobile ? 'space-between' : 'flex-start',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <img src="/AYF_logo_clean.png" alt="AYF" style={{ height: 28, width: 'auto' }} />
@@ -61,6 +80,23 @@ export default function Sidebar() {
             textTransform: 'uppercase',
           }}>Admin</span>
         </Link>
+        {isMobile && (
+          <button
+            onClick={onToggle}
+            aria-label="Close sidebar"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(247,247,247,0.4)',
+              cursor: 'pointer',
+              fontSize: 20,
+              padding: '4px 8px',
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <nav style={{
@@ -76,6 +112,7 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={() => isMobile && onToggle()}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -153,6 +190,7 @@ export default function Sidebar() {
       }}>
         <Link
           href="/"
+          onClick={() => isMobile && onToggle()}
           style={{
             display: 'flex',
             alignItems: 'center',

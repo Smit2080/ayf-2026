@@ -7,6 +7,16 @@ import Sidebar from './Sidebar';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [state, setState] = useState<'loading' | 'admin' | 'unauthorized' | 'error'>('loading');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -27,6 +37,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }).catch(() => setState('error'));
   }, []);
+
+  useEffect(() => {
+    if (isMobile) setSidebarOpen(false);
+    else setSidebarOpen(true);
+  }, [isMobile]);
 
   if (state === 'loading') {
     return (
@@ -99,15 +114,63 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         `,
         filter: 'blur(80px)',
       }} />
-      <Sidebar />
+
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 49,
+          }}
+        />
+      )}
+
+      <Sidebar
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(v => !v)}
+        isMobile={isMobile}
+      />
+
       <div style={{
         flex: 1,
         overflow: 'auto',
-        padding: '32px',
+        padding: isMobile ? '16px' : '32px',
         minWidth: 0,
         position: 'relative',
         zIndex: 1,
+        paddingTop: isMobile ? 60 : 32,
       }}>
+        {isMobile && (
+          <button
+            onClick={() => setSidebarOpen(v => !v)}
+            aria-label="Toggle sidebar menu"
+            style={{
+              position: 'fixed',
+              top: 12,
+              left: 16,
+              zIndex: 30,
+              background: 'rgba(13,13,15,0.85)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid var(--line)',
+              borderRadius: 8,
+              width: 36,
+              height: 36,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            <span style={{ display: 'block', width: 16, height: 2, background: 'var(--white)', borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 16, height: 2, background: 'var(--white)', borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 16, height: 2, background: 'var(--white)', borderRadius: 1 }} />
+          </button>
+        )}
         {children}
       </div>
     </div>

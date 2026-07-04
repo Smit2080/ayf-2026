@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StatusBadge from './StatusBadge';
 
 export interface Column {
@@ -53,6 +53,15 @@ export default function DataTable({
   const [saving, setSaving] = useState(false);
   const [bulkMode, setBulkMode] = useState<'none' | 'approve' | 'reject' | 'slot'>('none');
   const [showExport, setShowExport] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const totalPages = Math.ceil(total / perPage);
 
@@ -114,15 +123,15 @@ export default function DataTable({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 14,
+        gap: isMobile ? 10 : 14,
         marginBottom: 20,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 10, flexWrap: 'wrap', flex: 1 }}>
           <div style={{
             position: 'relative',
             flex: 1,
-            minWidth: 200,
-            maxWidth: 360,
+            minWidth: isMobile ? 140 : 200,
+            maxWidth: isMobile ? '100%' : 360,
           }}>
             <svg style={{
               position: 'absolute',
@@ -290,7 +299,7 @@ export default function DataTable({
           <span style={{ fontSize: 13, color: 'rgba(247,247,247,0.7)' }}>
             <strong style={{ color: 'var(--orange)', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{selected.size}</strong> row(s) selected
           </span>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: isMobile ? 4 : 8, flexWrap: 'wrap' }}>
             {filename === 'registrations' && (
               <button onClick={() => handleBulk('slot')} style={bulkBtnStyle}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" style={{ marginRight: 4, verticalAlign: 'middle' }}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
@@ -341,7 +350,7 @@ export default function DataTable({
         <table style={{
           width: '100%',
           borderCollapse: 'collapse',
-          fontSize: 13,
+          fontSize: isMobile ? 12 : 13,
           fontFamily: "'Inter', sans-serif",
         }}>
           <thead>
@@ -349,12 +358,12 @@ export default function DataTable({
               borderBottom: '1px solid var(--line)',
               background: 'rgba(13,13,15,0.6)',
             }}>
-              <th style={{ ...thStyle, width: 36, textAlign: 'center' }}>
+              <th style={{ ...thStyle, width: 36, textAlign: 'center', ...(isMobile ? { padding: '8px 6px' } : {}) }}>
                 <input
                   type="checkbox"
                   checked={data.length > 0 && selected.size === data.length}
                   onChange={toggleSelectAll}
-                  style={{ accentColor: 'var(--orange)', cursor: 'pointer', width: 15, height: 15 }}
+                  style={{ accentColor: 'var(--orange)', cursor: 'pointer', width: isMobile ? 13 : 15, height: isMobile ? 13 : 15 }}
                 />
               </th>
               {columns.map((col) => (
@@ -365,6 +374,7 @@ export default function DataTable({
                     width: col.width,
                     cursor: col.sortable ? 'pointer' : 'default',
                     userSelect: 'none',
+                    ...(isMobile ? { padding: '8px 6px', fontSize: 9 } : {}),
                   }}
                   onClick={() => col.sortable && onSort(col.key)}
                 >
@@ -433,16 +443,16 @@ export default function DataTable({
                     if (!selected.has(row.id)) e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'rgba(247,247,247,0.01)';
                   }}
                 >
-                  <td style={{ ...tdStyle, width: 36, textAlign: 'center' }}>
+                  <td style={{ ...tdStyle, width: 36, textAlign: 'center', ...(isMobile ? { padding: '7px 6px' } : {}) }}>
                     <input
                       type="checkbox"
                       checked={selected.has(row.id)}
                       onChange={() => toggleSelect(row.id)}
-                      style={{ accentColor: 'var(--orange)', cursor: 'pointer', width: 15, height: 15 }}
+                      style={{ accentColor: 'var(--orange)', cursor: 'pointer', width: isMobile ? 13 : 15, height: isMobile ? 13 : 15 }}
                     />
                   </td>
                   {columns.map((col) => (
-                    <td key={col.key} style={tdStyle}>
+                    <td key={col.key} style={{ ...tdStyle, ...(isMobile ? { padding: '7px 6px', fontSize: 11 } : {}) }}>
                       {renderCell(col, row)}
                     </td>
                   ))}
