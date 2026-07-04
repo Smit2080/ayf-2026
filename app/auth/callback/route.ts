@@ -1,27 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/register';
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === 'development';
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-    }
+  if (!code) {
+    return NextResponse.redirect(`${origin}/register?error=auth-callback-failed`);
   }
 
-  // If OAuth exchanges fails, redirect to home page or a error page
-  return NextResponse.redirect(`${origin}/register?error=auth-callback-failed`);
+  // Forward the code to the client-side confirm page which handles the
+  // PKCE exchange using the browser Supabase client (where the verifier lives)
+  const confirmUrl = new URL(`${origin}/auth/confirm`);
+  confirmUrl.searchParams.set('code', code);
+  confirmUrl.searchParams.set('next', next);
+
+  return NextResponse.redirect(confirmUrl.toString());
 }
