@@ -22,7 +22,7 @@ export default function WhyAYF() {
             <div className="pillar"><div className="ic">IN</div><span>Inspire</span></div>
           </div>
           <a className="btn btn-outline" style={{ borderColor: 'var(--ink)', color: 'var(--ink)' }} href="#events">View Competitions</a>
-          <div className="stat-strip">
+          <div className="stat-strip hide-until-event">
             <div><b>5000+</b><span>Participants</span></div>
             <div><b>150+</b><span>Events</span></div>
             <div><b>30+</b><span>Colleges</span></div>

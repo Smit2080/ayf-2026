@@ -7,11 +7,11 @@ import Journey from '@/components/Journey';
 import EventsList from '@/components/EventsList';
 import VolunteerSection from '@/components/VolunteerSection';
 import Gallery from '@/components/Gallery';
+import Instagram from '@/components/Instagram';
 import StatsCounter from '@/components/StatsCounter';
 import Testimonials from '@/components/Testimonials';
 import Partners from '@/components/Partners';
 import FAQSection from '@/components/FAQ';
-import Instagram from '@/components/Instagram';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
 
@@ -31,11 +31,11 @@ export default function HomePage() {
         <EventsList />
         <VolunteerSection />
         <Gallery />
+        <Instagram />
         <StatsCounter />
         <Testimonials />
         <Partners />
         <FAQSection />
-        <Instagram />
       </main>
 
       <CTA />

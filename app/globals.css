@@ -1,3 +1,6 @@
+/* unhide after AYF 2026 ends - removes aspirational stats numbers */
+.hide-until-event{display:none;}
+
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root{

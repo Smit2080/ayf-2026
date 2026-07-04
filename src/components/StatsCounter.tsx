@@ -35,7 +35,7 @@ export default function StatsCounter() {
   }, []);
 
   return (
-    <section>
+    <section className="hide-until-event">
       <div className="stats-bar">
         {stats.map((s) => (
           <div className="stats-item" key={s.label}>
