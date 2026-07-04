@@ -25,8 +25,8 @@ export default function HomePage() {
       <main id="top">
         <Hero />
         <Ticker />
-        <WhyAYF />
         <EventCategories />
+        <WhyAYF />
         <Journey />
         <EventsList />
         <VolunteerSection />
