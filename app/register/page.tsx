@@ -375,7 +375,6 @@ function RegisterContent() {
             <img src="/AYF_logo_clean.png" alt="AYF" />
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link className="btn btn-ghost register-back" href="/dashboard">Dashboard</Link>
             <button className="btn btn-ghost register-back" onClick={handleSignOut}>Sign Out</button>
           </div>
         </div>
@@ -517,7 +516,7 @@ function RegisterContent() {
                     <p style={{ fontSize: '14px', color: 'rgba(247,247,247,0.6)', marginBottom: '24px', lineHeight: '1.6' }}>
                       You have already submitted a volunteer application. You can view your application status or register for competitions in your dashboard.
                     </p>
-                    <Link href="/dashboard" className="btn btn-solid" style={{ background: 'var(--purple)', borderColor: 'var(--purple)' }}>Go to Dashboard</Link>
+                    <Link href="/" className="btn btn-solid" style={{ background: 'var(--purple)', borderColor: 'var(--purple)' }}>Back to Home</Link>
                   </div>
                 ) : (
                   <form onSubmit={(e) => handleFormSubmit(e, 'vol')}>
