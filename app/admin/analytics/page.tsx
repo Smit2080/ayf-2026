@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Analytics {
   daily: { date: string; registrations: number }[];
@@ -26,16 +26,100 @@ const statusColors: Record<string, string> = {
 
 const compColors = ['#FF5A1F', '#B5AEE3', '#FFB199', '#9C93D6', '#D9D4F0'];
 
-function MiniSparkline({ data, color }: { data: number[]; color: string }) {
-  if (data.length < 2) return null;
-  const max = Math.max(...data, 1);
-  const w = 160;
-  const h = 40;
-  const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - (v / max) * (h - 4) - 2}`).join(' ');
+function AnalyticsChart({ data, color, label }: { data: { date: string; registrations?: number; applications?: number }[]; color: string; label: string }) {
+  const [hoveredIdx, setHoveredIdx] = useState(-1);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const values = data.map((d) => (d.registrations ?? d.applications ?? 0));
+  const maxVal = Math.max(...values, 1);
+  const pad = 20;
+  const ch = 200;
+  const n = data.length;
+  if (n < 2) return <div style={{ height: ch, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--admin-faint)', fontSize: '0.8rem' }}>Insufficient data</div>;
+  const xStep = (620 - 40) / (n - 1);
+  const linePoints = data.map((d, i) => {
+    const x = 20 + i * xStep;
+    const y = ch - pad - ((d.registrations ?? d.applications ?? 0) / maxVal) * (ch - 2 * pad);
+    return `${x},${y}`;
+  });
+  const areaPath = linePoints.join(' ') + ` ${20 + (n - 1) * xStep},${ch - pad} 20,${ch - pad} Z`;
+  const linePath = linePoints.join(' ');
+  const gridYs = [25, 65, 105, 145, 185];
+
+  function onMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const relX = ((e.clientX - rect.left) / rect.width) * 620;
+    const rawIdx = (relX - 20) / xStep;
+    const idx = Math.max(0, Math.min(n - 1, Math.round(rawIdx)));
+    setHoveredIdx(idx);
+  }
+
+  const hoveredPoint = hoveredIdx >= 0 && hoveredIdx < n ? data[hoveredIdx] : null;
+  const hoveredX = hoveredIdx >= 0 ? 20 + hoveredIdx * xStep : 0;
+  const hoveredY = hoveredPoint
+    ? ch - pad - ((hoveredPoint.registrations ?? hoveredPoint.applications ?? 0) / maxVal) * (ch - 2 * pad)
+    : 0;
+
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
-      <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <div style={{ width: '100%', position: 'relative' }}>
+      {/* Tooltip */}
+      {hoveredPoint && (
+        <div style={{
+          position: 'absolute', zIndex: 10, pointerEvents: 'none',
+          left: `calc(${(hoveredX / 620) * 100}% - 45px)`,
+          top: `calc(${(hoveredY / ch) * 100}% - 48px)`,
+          background: 'var(--admin-black)',
+          color: 'var(--cream)',
+          borderRadius: 10,
+          padding: '0.5rem 0.75rem',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          textAlign: 'center',
+          lineHeight: 1.4,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          whiteSpace: 'nowrap',
+        }}>
+          <div>{hoveredPoint.registrations ?? hoveredPoint.applications ?? 0}</div>
+          <div style={{ opacity: 0.6, fontWeight: 400, fontSize: '0.68rem' }}>{hoveredPoint.date}</div>
+        </div>
+      )}
+      <svg ref={svgRef} viewBox="0 0 620 200" width="100%" height={ch} preserveAspectRatio="xMidYMid meet"
+        onMouseMove={onMouseMove}
+        onMouseLeave={() => setHoveredIdx(-1)}
+        style={{ cursor: 'pointer' }}>
+        <defs><linearGradient id={`areaF-${label}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient></defs>
+        <g stroke="#111111" strokeOpacity="0.06">
+          {gridYs.map((y) => <line key={y} x1="0" y1={y} x2={620} y2={y} />)}
+        </g>
+        <path d={areaPath} fill={`url(#areaF-${label})`} />
+        <polyline points={linePath} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        {hoveredIdx >= 0 && (
+          <line x1={hoveredX} y1={0} x2={hoveredX} y2={ch - pad}
+            stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.5" />
+        )}
+        <g fill={color}>
+          {data.map((d, i) => {
+            const x = 20 + i * xStep;
+            const y = ch - pad - ((d.registrations ?? d.applications ?? 0) / maxVal) * (ch - 2 * pad);
+            const isHovered = i === hoveredIdx;
+            return (
+              <g key={d.date}>
+                {isHovered && (
+                  <circle cx={x} cy={y} r="7" fill="white" stroke={color} strokeWidth="3" opacity="0.9" />
+                )}
+                <circle cx={x} cy={y} r={isHovered ? 4.5 : 3}
+                  fill={color} opacity={isHovered ? 1 : 0.5}
+                  style={{ transition: 'r 0.12s, opacity 0.12s' }}
+                />
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+    </div>
   );
 }
 
@@ -55,9 +139,15 @@ export default function AdminAnalytics() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ width: 32, height: 32, border: '3px solid var(--admin-orange)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 12px', animation: 'dSpin 1s linear infinite' }} />
         <style>{`@keyframes dSpin{to{transform:rotate(360deg)}}`}</style>
-      </div>
-    );
-  }
+      <style>{`
+        @media (max-width: 900px) {
+          .adm-an-grid-3 { grid-template-columns: 1fr !important; }
+          .adm-an-grid-2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
 
   const regValues = data.daily.map((d) => d.registrations);
   const volValues = data.dailyVolunteers.map((d) => d.applications);
@@ -74,7 +164,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Totals row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
+      <div className="adm-an-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
         {[
           { label: 'Total Registrations', value: data.totals.registrations, color: '#9C93D6' },
           { label: 'Total Volunteers', value: data.totals.volunteers, color: '#FF5A1F' },
@@ -91,26 +181,24 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Registration trend */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
+      <div className="adm-an-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
         <div className="admin-card" style={{
           background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem',
         }}>
           <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: '1rem', marginBottom: '1rem', color: 'var(--ink)' }}>
             Daily Registrations
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <MiniSparkline data={regValues} color="#9C93D6" />
-          </div>
-          <div style={{ marginTop: 12 }}>
+          <AnalyticsChart data={data.daily} color="#9C93D6" label="reg" />
+          <div style={{ marginTop: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--admin-faint)', fontWeight: 600 }}>
               <span>{data.period.from}</span>
               <span>{data.period.to}</span>
             </div>
             <div style={{
               display: 'flex', justifyContent: 'space-between', marginTop: 4,
-              fontSize: '0.68rem', color: 'var(--admin-faint)', fontWeight: 600,
+              fontSize: '0.65rem', color: 'var(--admin-faint)', fontWeight: 600,
             }}>
-              {data.daily.filter((_, i) => i % 7 === 0 || i === data.daily.length - 1).map((d) => (
+              {data.daily.filter((_, i) => i % Math.max(1, Math.floor(data.daily.length / 6)) === 0 || i === data.daily.length - 1).map((d) => (
                 <span key={d.date}>{d.date.slice(5)}</span>
               ))}
             </div>
@@ -123,19 +211,17 @@ export default function AdminAnalytics() {
           <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: '1rem', marginBottom: '1rem', color: 'var(--ink)' }}>
             Daily Volunteer Applications
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <MiniSparkline data={volValues} color="#FF5A1F" />
-          </div>
-          <div style={{ marginTop: 12 }}>
+          <AnalyticsChart data={data.dailyVolunteers} color="#FF5A1F" label="vol" />
+          <div style={{ marginTop: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--admin-faint)', fontWeight: 600 }}>
               <span>{data.period.from}</span>
               <span>{data.period.to}</span>
             </div>
             <div style={{
               display: 'flex', justifyContent: 'space-between', marginTop: 4,
-              fontSize: '0.68rem', color: 'var(--admin-faint)', fontWeight: 600,
+              fontSize: '0.65rem', color: 'var(--admin-faint)', fontWeight: 600,
             }}>
-              {data.dailyVolunteers.filter((_, i) => i % 7 === 0 || i === data.dailyVolunteers.length - 1).map((d) => (
+              {data.dailyVolunteers.filter((_, i) => i % Math.max(1, Math.floor(data.dailyVolunteers.length / 6)) === 0 || i === data.dailyVolunteers.length - 1).map((d) => (
                 <span key={d.date}>{d.date.slice(5)}</span>
               ))}
             </div>
@@ -144,7 +230,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Status breakdowns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+      <div className="adm-an-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
         {/* Competition statuses */}
         <div className="admin-card" style={{
           background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem',
