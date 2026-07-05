@@ -139,12 +139,6 @@ export default function AdminAnalytics() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <div style={{ width: 32, height: 32, border: '3px solid var(--admin-orange)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 12px', animation: 'dSpin 1s linear infinite' }} />
         <style>{`@keyframes dSpin{to{transform:rotate(360deg)}}`}</style>
-      <style>{`
-        @media (max-width: 900px) {
-          .adm-an-grid-3 { grid-template-columns: 1fr !important; }
-          .adm-an-grid-2 { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -198,7 +192,10 @@ export default function AdminAnalytics() {
               display: 'flex', justifyContent: 'space-between', marginTop: 4,
               fontSize: '0.65rem', color: 'var(--admin-faint)', fontWeight: 600,
             }}>
-              {data.daily.filter((_, i) => i % Math.max(1, Math.floor(data.daily.length / 6)) === 0 || i === data.daily.length - 1).map((d) => (
+              {data.daily.filter((_, i) => {
+                const step = Math.max(1, Math.floor(data.daily.length / 3));
+                return i % step === 0 || i === data.daily.length - 1;
+              }).map((d) => (
                 <span key={d.date}>{d.date.slice(5)}</span>
               ))}
             </div>
@@ -221,7 +218,10 @@ export default function AdminAnalytics() {
               display: 'flex', justifyContent: 'space-between', marginTop: 4,
               fontSize: '0.65rem', color: 'var(--admin-faint)', fontWeight: 600,
             }}>
-              {data.dailyVolunteers.filter((_, i) => i % Math.max(1, Math.floor(data.dailyVolunteers.length / 6)) === 0 || i === data.dailyVolunteers.length - 1).map((d) => (
+              {data.dailyVolunteers.filter((_, i) => {
+                const step = Math.max(1, Math.floor(data.dailyVolunteers.length / 3));
+                return i % step === 0 || i === data.dailyVolunteers.length - 1;
+              }).map((d) => (
                 <span key={d.date}>{d.date.slice(5)}</span>
               ))}
             </div>
@@ -299,6 +299,12 @@ export default function AdminAnalytics() {
           )}
         </div>
       </div>
+      <style>{`
+        @media (max-width: 900px) {
+          .adm-an-grid-3 { grid-template-columns: 1fr !important; }
+          .adm-an-grid-2 { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
