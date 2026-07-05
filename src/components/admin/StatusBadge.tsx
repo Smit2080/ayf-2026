@@ -1,43 +1,52 @@
 'use client';
 
-const statusColors: Record<string, { bg: string; color: string; border: string }> = {
-  'Pending Audition': { bg: 'rgba(255,184,0,0.1)', color: 'var(--orange)', border: 'rgba(255,184,0,0.2)' },
-  'Pending Review': { bg: 'rgba(255,184,0,0.1)', color: 'var(--orange)', border: 'rgba(255,184,0,0.2)' },
-  'Slot Allotted': { bg: 'rgba(198,255,0,0.1)', color: 'var(--lime)', border: 'rgba(198,255,0,0.25)' },
-  'Shortlisted': { bg: 'rgba(198,255,0,0.1)', color: 'var(--lime)', border: 'rgba(198,255,0,0.25)' },
-  'Confirmed': { bg: 'rgba(0,224,209,0.1)', color: 'var(--teal)', border: 'rgba(0,224,209,0.25)' },
-  'Approved': { bg: 'rgba(0,224,209,0.1)', color: 'var(--teal)', border: 'rgba(0,224,209,0.25)' },
-  'Failed': { bg: 'rgba(255,46,138,0.1)', color: 'var(--pink)', border: 'rgba(255,46,138,0.25)' },
-  'Rejected': { bg: 'rgba(255,46,138,0.1)', color: 'var(--pink)', border: 'rgba(255,46,138,0.25)' },
+type StatusVariant = {
+  bg: string;
+  color: string;
+  label: string;
 };
 
-function getColors(status: string) {
-  for (const [key, colors] of Object.entries(statusColors)) {
-    if (status.toLowerCase().includes(key.toLowerCase().split(' ')[0].toLowerCase())) {
-      return colors;
-    }
+const variantByKey: Record<string, StatusVariant> = {
+  pending:    { bg: 'var(--admin-orange-pale)',  color: 'var(--admin-orange)',  label: 'Pending' },
+  waitlisted: { bg: 'var(--admin-lavender-pale)',color: 'var(--lavender)',     label: 'Waitlisted' },
+  approved:   { bg: 'var(--admin-lavender-pale)',color: 'var(--lavender)',     label: 'Approved' },
+  rejected:   { bg: 'var(--admin-reject-pale)',  color: 'var(--admin-reject)', label: 'Rejected' },
+  shortlisted:{ bg: 'var(--admin-lavender-pale)',color: 'var(--lavender)',     label: 'Shortlisted' },
+  selected:   { bg: 'var(--admin-lavender-pale)',color: 'var(--lavender)',     label: 'Selected' },
+};
+
+function resolveVariant(status: string): StatusVariant {
+  const s = (status || '').toLowerCase().trim();
+
+  const direct = variantByKey[s];
+  if (direct) return direct;
+
+  if (s.includes('waitlist')) return variantByKey.waitlisted;
+  if (s.includes('shortlist')) return variantByKey.shortlisted;
+  if (s.includes('select')) return variantByKey.selected;
+  if (s.includes('approve') || s.includes('confirm')) return variantByKey.approved;
+  if (s.includes('reject') || s.includes('fail')) return variantByKey.rejected;
+  if (s.includes('pending') || s.includes('slot') || s.includes('review') || s.includes('audition')) {
+    return variantByKey.pending;
   }
-  return { bg: 'rgba(247,247,247,0.06)', color: 'rgba(247,247,247,0.5)', border: 'var(--line)' };
+
+  return { bg: 'rgba(17,17,17,0.06)', color: 'rgba(17,17,17,0.5)', label: status || 'Unknown' };
 }
 
 export default function StatusBadge({ status }: { status: string }) {
-  const c = getColors(status);
+  const v = resolveVariant(status);
   return (
     <span style={{
       display: 'inline-block',
-      fontFamily: "'Space Mono', monospace",
-      fontSize: 10,
+      padding: '0.35rem 0.85rem',
+      borderRadius: 9999,
+      fontSize: '0.7rem',
       fontWeight: 700,
-      textTransform: 'uppercase',
-      letterSpacing: '0.08em',
-      padding: '4px 10px',
-      borderRadius: 4,
-      background: c.bg,
-      color: c.color,
-      border: `1px solid ${c.border}`,
+      background: v.bg,
+      color: v.color,
       whiteSpace: 'nowrap',
     }}>
-      {status}
+      {v.label}
     </span>
   );
 }

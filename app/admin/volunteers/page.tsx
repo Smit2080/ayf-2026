@@ -75,11 +75,12 @@ export default function AdminVolunteers() {
   }
 
   async function handleEdit(id: string, key: string, value: any) {
-    await fetch('/api/admin/volunteers', {
+    const res = await fetch('/api/admin/volunteers', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status: value }),
     });
+    if (!res.ok) { console.error('Edit failed', await res.text()); return; }
     fetchData();
   }
 
@@ -89,21 +90,22 @@ export default function AdminVolunteers() {
       pending: 'Pending Review',
       reject: 'Rejected',
     };
-    await fetch('/api/admin/volunteers', {
+    const res = await fetch('/api/admin/volunteers', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bulk: true, ids, status: statusMap[action] }),
     });
+    if (!res.ok) { console.error('Bulk action failed', await res.text()); return; }
     fetchData();
   }
 
   return (
     <div>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Anton', sans-serif", fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '0.01em', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '-0.01em', lineHeight: 1, color: 'var(--ink)' }}>
           Volunteer <span style={{ color: 'var(--orange)' }}>Applications</span>
         </h1>
-        <p style={{ fontSize: 12, color: 'rgba(247,247,247,0.4)', marginTop: 6, fontFamily: "'Space Mono', monospace" }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--admin-muted)', marginTop: 8, fontWeight: 500 }}>
           Review and manage volunteer candidates
         </p>
       </div>
@@ -128,9 +130,6 @@ export default function AdminVolunteers() {
         onBulkAction={handleBulkAction}
         onExportCSV={() => window.open('/api/admin/export?type=volunteers&format=csv', '_blank')}
         onExportExcel={() => window.open('/api/admin/export?type=volunteers&format=xlsx', '_blank')}
-        onSyncSheets={() => {
-          window.open(`/api/admin/export?type=volunteers&format=csv`, '_blank');
-        }}
         filename="volunteers"
       />
     </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/adminClient';
 
 export async function GET(request: NextRequest) {
   const admin = await getAdminUser();
@@ -77,7 +78,8 @@ export async function PATCH(request: NextRequest) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
+  const supabase = adminClient || await createClient();
   const body = await request.json();
 
   if (body.bulk) {

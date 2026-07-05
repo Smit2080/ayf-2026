@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/adminClient';
 
 export async function GET(request: NextRequest) {
   const admin = await getAdminUser();
@@ -14,10 +15,25 @@ export async function GET(request: NextRequest) {
   const sort = searchParams.get('sort') || 'created_at';
   const order = searchParams.get('order') || 'desc';
   const statusFilter = searchParams.get('status') || '';
+  const periodFilter = searchParams.get('period') || '';
 
   let query = supabase
     .from('competitions')
     .select('*', { count: 'exact' });
+
+  if (periodFilter && periodFilter !== 'all') {
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+    let periodStart: Date;
+    switch (periodFilter) {
+      case 'today': periodStart = todayStart; break;
+      case 'week': { const d = new Date(todayStart); d.setDate(d.getDate() - 6); periodStart = d; break; }
+      case 'month': { const d = new Date(todayStart); d.setDate(d.getDate() - 29); periodStart = d; break; }
+      default: periodStart = todayStart;
+    }
+    query = query.gte('created_at', periodStart.toISOString());
+  }
 
   if (statusFilter) {
     query = query.eq('status', statusFilter);
@@ -77,7 +93,8 @@ export async function PATCH(request: NextRequest) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const supabase = await createClient();
+  const adminClient = createAdminClient();
+  const supabase = adminClient || await createClient();
   const body = await request.json();
 
   if (body.bulk) {

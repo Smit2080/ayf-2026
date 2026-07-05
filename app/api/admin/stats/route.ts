@@ -8,6 +8,14 @@ export async function GET() {
 
   const supabase = await createClient();
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayISO = todayStart.toISOString();
+
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  const yesterdayISO = yesterdayStart.toISOString();
+
   const [
     { count: totalUsers },
     { count: totalRegistrations },
@@ -18,6 +26,8 @@ export async function GET() {
     { count: pendingReviews },
     { count: shortlisted },
     { count: approvedVols },
+    { count: todayRegistrations },
+    { count: yesterdayRegistrations },
     { data: compBreakdown },
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
@@ -29,13 +39,21 @@ export async function GET() {
     supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Pending Review'),
     supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Shortlisted'),
     supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Approved'),
-    supabase.from('competitions').select('competition_name', { count: 'exact' }),
+    supabase.from('competitions').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
+    supabase.from('competitions').select('*', { count: 'exact', head: true }).gte('created_at', yesterdayISO).lt('created_at', todayISO),
+    supabase.from('competitions').select('competition_name'),
   ]);
 
   const compCounts: Record<string, number> = {};
   compBreakdown?.forEach((c: any) => {
     compCounts[c.competition_name] = (compCounts[c.competition_name] || 0) + 1;
   });
+
+  const yc = yesterdayRegistrations ?? 0;
+  const tc = todayRegistrations ?? 0;
+  const todayDelta = yc > 0
+    ? `↑ ${((tc / yc) * 100).toFixed(0)}% from yesterday`
+    : tc > 0 ? '↑ New today' : '—';
 
   return NextResponse.json({
     totalUsers: totalUsers ?? 0,
@@ -47,6 +65,8 @@ export async function GET() {
     pendingReviews: pendingReviews ?? 0,
     shortlisted: shortlisted ?? 0,
     approvedVols: approvedVols ?? 0,
+    todayRegistrations: tc,
+    todayDelta,
     competitionBreakdown: compCounts,
   });
 }

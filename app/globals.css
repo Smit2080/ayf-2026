@@ -12,6 +12,20 @@
   --amber:#FFC400;
   --teal:#00E0D1;
   --line:rgba(247,247,247,0.1);
+  --cream:#E8DFC8;
+  --cream-soft:#F1EBDD;
+  --card:#FBF8F0;
+  --admin-lavender:#9C93D6;
+  --admin-lavender-light:#B5AEE3;
+  --admin-lavender-pale:#E4E1F6;
+  --admin-orange:#FF5A1F;
+  --admin-orange-pale:#FFE3D6;
+  --admin-reject:#E0567A;
+  --admin-reject-pale:#FBE1E8;
+  --admin-muted:rgba(17,17,17,0.5);
+  --admin-faint:rgba(17,17,17,0.35);
+  --admin-line:rgba(17,17,17,0.08);
+  --admin-black:#0A0A0A;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}

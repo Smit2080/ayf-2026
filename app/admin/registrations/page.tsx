@@ -79,11 +79,12 @@ export default function AdminRegistrations() {
 
   async function handleEdit(id: string, key: string, value: any) {
     const updateKey = key === 'status' ? 'status' : key === 'audition_slot' ? 'audition_slot' : key;
-    await fetch('/api/admin/registrations', {
+    const res = await fetch('/api/admin/registrations', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, [updateKey]: value }),
     });
+    if (!res.ok) { console.error('Edit failed', await res.text()); return; }
     fetchData();
   }
 
@@ -94,21 +95,22 @@ export default function AdminRegistrations() {
       reject: 'Failed',
       slot: 'Slot Allotted',
     };
-    await fetch('/api/admin/registrations', {
+    const res = await fetch('/api/admin/registrations', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bulk: true, ids, status: statusMap[action] }),
     });
+    if (!res.ok) { console.error('Bulk action failed', await res.text()); return; }
     fetchData();
   }
 
   return (
     <div>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Anton', sans-serif", fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '0.01em', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '-0.01em', lineHeight: 1, color: 'var(--ink)' }}>
           Competition <span style={{ color: 'var(--orange)' }}>Registrations</span>
         </h1>
-        <p style={{ fontSize: 12, color: 'rgba(247,247,247,0.4)', marginTop: 6, fontFamily: "'Space Mono', monospace" }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--admin-muted)', marginTop: 8, fontWeight: 500 }}>
           Manage audition slots, approve entries, track statuses
         </p>
       </div>
@@ -133,10 +135,6 @@ export default function AdminRegistrations() {
         onBulkAction={handleBulkAction}
         onExportCSV={() => window.open('/api/admin/export?type=registrations&format=csv', '_blank')}
         onExportExcel={() => window.open('/api/admin/export?type=registrations&format=xlsx', '_blank')}
-        onSyncSheets={() => {
-          const csvUrl = `/api/admin/export?type=registrations&format=csv`;
-          window.open(csvUrl, '_blank');
-        }}
         filename="registrations"
       />
     </div>

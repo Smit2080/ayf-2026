@@ -14,16 +14,12 @@ const columns: Column[] = [
     key: 'role', label: 'Role', sortable: true,
     render: (val: string) => (
       <span style={{
-        fontFamily: "'Space Mono', monospace",
-        fontSize: 10,
+        fontSize: '0.7rem',
         fontWeight: 700,
-        textTransform: 'uppercase',
-        letterSpacing: '0.08em',
-        padding: '3px 8px',
-        borderRadius: 4,
-        background: val === 'admin' ? 'rgba(123,44,255,0.1)' : 'rgba(247,247,247,0.04)',
-        color: val === 'admin' ? 'var(--purple)' : 'rgba(247,247,247,0.4)',
-        border: val === 'admin' ? '1px solid rgba(123,44,255,0.2)' : '1px solid var(--line)',
+        padding: '0.35rem 0.85rem',
+        borderRadius: 9999,
+        background: val === 'admin' ? 'var(--admin-lavender-pale)' : 'rgba(17,17,17,0.06)',
+        color: val === 'admin' ? 'var(--admin-lavender)' : 'rgba(17,17,17,0.5)',
       }}>
         {val}
       </span>
@@ -78,10 +74,10 @@ export default function AdminProfiles() {
   return (
     <div>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Anton', sans-serif", fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '0.01em', lineHeight: 1 }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(24px, 2.5vw, 30px)', letterSpacing: '-0.01em', lineHeight: 1, color: 'var(--ink)' }}>
           User <span style={{ color: 'var(--orange)' }}>Profiles</span>
         </h1>
-        <p style={{ fontSize: 12, color: 'rgba(247,247,247,0.4)', marginTop: 6, fontFamily: "'Space Mono', monospace" }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--admin-muted)', marginTop: 8, fontWeight: 500 }}>
           All registered users
         </p>
       </div>
