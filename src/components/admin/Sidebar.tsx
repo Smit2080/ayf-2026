@@ -93,7 +93,7 @@ export default function Sidebar({ isOpen, onToggle, isMobile }: { isOpen: boolea
       {/* Brand */}
       <div style={{ padding: '2rem 1.25rem 0' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, padding: '0 0.5rem' }}>
-          <Link href="/admin" style={{ display: 'flex', alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
             <span style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 900,
