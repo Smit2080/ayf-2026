@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { getCached, setCache } from '@/utils/cache';
+
+const CACHE_TTL = 10_000;
 
 export async function GET(request: NextRequest) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const supabase = await createClient();
   const { searchParams } = new URL(request.url);
   const period = searchParams.get('period') || 'all';
+  const cacheKey = `admin:activity:${period}`;
+
+  const cached = getCached<any>(cacheKey, CACHE_TTL);
+  if (cached) return NextResponse.json(cached);
+
+  const supabase = await createClient();
 
   let regQuery = supabase
     .from('competitions')
@@ -91,5 +99,7 @@ export async function GET(request: NextRequest) {
 
   activities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  return NextResponse.json({ activities: activities.slice(0, 10) });
+  const result = { activities: activities.slice(0, 10) };
+  setCache(cacheKey, result, CACHE_TTL);
+  return NextResponse.json(result);
 }

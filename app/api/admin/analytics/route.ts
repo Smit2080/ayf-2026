@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { getCached, setCache } from '@/utils/cache';
+
+const CACHE_TTL = 10_000;
 
 export async function GET() {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const cached = getCached<any>('admin:analytics', CACHE_TTL);
+  if (cached) return NextResponse.json(cached);
 
   const supabase = await createClient();
 
@@ -16,13 +22,18 @@ export async function GET() {
     { data: regs },
     { data: vols },
     { data: profiles },
+    { count: totalRegs },
+    { count: totalVols },
+    { count: totalProfiles },
   ] = await Promise.all([
     supabase.from('competitions').select('competition_name, status, created_at').gte('created_at', thirtyDaysAgo.toISOString()),
     supabase.from('volunteers').select('status, created_at').gte('created_at', thirtyDaysAgo.toISOString()),
     supabase.from('profiles').select('created_at').gte('created_at', thirtyDaysAgo.toISOString()),
+    supabase.from('competitions').select('*', { count: 'exact', head: true }),
+    supabase.from('volunteers').select('*', { count: 'exact', head: true }),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
   ]);
 
-  // Daily registration counts (last 30 days)
   const dailyRegs: Record<string, number> = {};
   const dailyVols: Record<string, number> = {};
   const dailyProfiles: Record<string, number> = {};
@@ -49,7 +60,6 @@ export async function GET() {
     if (key && dailyProfiles[key] !== undefined) dailyProfiles[key]++;
   }
 
-  // Status breakdowns
   const compStatuses: Record<string, number> = {};
   for (const r of regs || []) {
     compStatuses[r.status] = (compStatuses[r.status] || 0) + 1;
@@ -60,18 +70,12 @@ export async function GET() {
     volStatuses[v.status] = (volStatuses[v.status] || 0) + 1;
   }
 
-  // Competition breakdown
   const compBreakdown: Record<string, number> = {};
   for (const r of regs || []) {
     compBreakdown[r.competition_name] = (compBreakdown[r.competition_name] || 0) + 1;
   }
 
-  // Total counts
-  const { count: totalRegs } = await supabase.from('competitions').select('*', { count: 'exact', head: true });
-  const { count: totalVols } = await supabase.from('volunteers').select('*', { count: 'exact', head: true });
-  const { count: totalProfiles } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-
-  return NextResponse.json({
+  const result = {
     daily: Object.entries(dailyRegs).map(([date, registrations]) => ({ date, registrations })),
     dailyVolunteers: Object.entries(dailyVols).map(([date, applications]) => ({ date, applications })),
     dailyProfiles: Object.entries(dailyProfiles).map(([date, signups]) => ({ date, signups })),
@@ -87,5 +91,8 @@ export async function GET() {
       from: thirtyDaysAgo.toISOString().slice(0, 10),
       to: now.toISOString().slice(0, 10),
     },
-  });
+  };
+
+  setCache('admin:analytics', result, CACHE_TTL);
+  return NextResponse.json(result);
 }

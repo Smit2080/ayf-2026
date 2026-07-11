@@ -33,11 +33,37 @@ function resolveVariant(status: string): StatusVariant {
   return { bg: 'rgba(17,17,17,0.06)', color: 'rgba(17,17,17,0.5)', label: status || 'Unknown' };
 }
 
-export default function StatusBadge({ status }: { status: string }) {
+const statusIcons: Record<string, string> = {
+  confirmed: '✓',
+  approved: '✓',
+  failed: '✕',
+  rejected: '✕',
+  'slot allotted': '🕐',
+  shortlisted: '⭐',
+  'pending audition': '⏳',
+  'pending review': '⏳',
+};
+
+function iconFor(status: string): string {
+  const s = status.toLowerCase().trim();
+  for (const [key, icon] of Object.entries(statusIcons)) {
+    if (s === key || s.includes(key)) return icon;
+  }
+  if (s.includes('pending') || s.includes('review') || s.includes('audition')) return '⏳';
+  if (s.includes('slot')) return '🕐';
+  if (s.includes('shortlist')) return '⭐';
+  if (s.includes('confirm') || s.includes('approve')) return '✓';
+  if (s.includes('fail') || s.includes('reject')) return '✕';
+  return '';
+}
+
+export default function StatusBadge({ status, showIcon }: { status: string; showIcon?: boolean }) {
   const v = resolveVariant(status);
   return (
     <span style={{
-      display: 'inline-block',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 4,
       padding: '0.35rem 0.85rem',
       borderRadius: 9999,
       fontSize: '0.7rem',
@@ -46,6 +72,7 @@ export default function StatusBadge({ status }: { status: string }) {
       color: v.color,
       whiteSpace: 'nowrap',
     }}>
+      {showIcon && <span style={{ fontSize: 11 }}>{iconFor(status)}</span>}
       {v.label}
     </span>
   );

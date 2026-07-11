@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { getCached, setCache, clearCache } from '@/utils/cache';
+
+const CACHE_TTL = 10_000;
 
 export async function GET() {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const cached = getCached<any>('admin:settings', CACHE_TTL);
+  if (cached) return NextResponse.json(cached);
 
   const supabase = await createClient();
 
@@ -13,10 +19,13 @@ export async function GET() {
     supabase.from('competition_meta').select('id, name, registration_open').order('name'),
   ]);
 
-  return NextResponse.json({
+  const result = {
     settings: settings || { registration_open: true, maintenance_mode: false },
     competitions: meta || [],
-  });
+  };
+
+  setCache('admin:settings', result, CACHE_TTL);
+  return NextResponse.json(result);
 }
 
 export async function PATCH(request: NextRequest) {
@@ -32,6 +41,8 @@ export async function PATCH(request: NextRequest) {
       .update({ registration_open: body.registration_open })
       .eq('id', body.competition_id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    clearCache('admin:settings');
+    clearCache('admin:competitions');
     return NextResponse.json({ success: true });
   }
 
@@ -46,6 +57,8 @@ export async function PATCH(request: NextRequest) {
     } else {
       await supabase.from('admin_settings').insert({ [body.key]: body.value });
     }
+    clearCache('admin:settings');
+    clearCache('admin:competitions');
     return NextResponse.json({ success: true });
   }
 

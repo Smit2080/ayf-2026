@@ -10,7 +10,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then((r) => r.json())
+      .then(async (r) => { if (!r.ok) throw new Error('Settings fetch failed'); return r.json(); })
       .then((d) => { setComps(d.competitions || []); setSettings(d.settings || {}); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
@@ -31,9 +31,33 @@ export default function AdminSettings() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid var(--admin-orange)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 12px', animation: 'dSpin 1s linear infinite' }} />
-        <style>{`@keyframes dSpin{to{transform:rotate(360deg)}}`}</style>
+      <div>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ width: 140, height: 30, background: 'rgba(17,17,17,0.06)', borderRadius: 8, animation: 'skPulse 1.5s ease-in-out infinite' }} />
+          <div style={{ width: 260, height: 16, background: 'rgba(17,17,17,0.04)', borderRadius: 6, marginTop: 10, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: '0.1s' }} />
+        </div>
+        <div className="admin-card" style={{
+          background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem',
+          marginBottom: '1.5rem',
+        }}>
+          <div style={{ width: '50%', height: 20, background: 'rgba(17,17,17,0.06)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite' }} />
+          <div style={{ width: '70%', height: 14, background: 'rgba(17,17,17,0.04)', borderRadius: 4, marginTop: 8, marginBottom: 20, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: '0.1s' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '0.85rem 1rem', border: '1px solid var(--admin-line)', borderRadius: 16,
+              }}>
+                <div>
+                  <div style={{ width: 160, height: 16, background: 'rgba(17,17,17,0.06)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+                  <div style={{ width: 60, height: 12, background: 'rgba(17,17,17,0.04)', borderRadius: 4, marginTop: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+                </div>
+                <div style={{ width: 48, height: 26, borderRadius: 9999, background: 'rgba(17,17,17,0.06)', animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+              </div>
+            ))}
+          </div>
+        </div>
+        <style>{`@keyframes skPulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
       </div>
     );
   }

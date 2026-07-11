@@ -18,15 +18,8 @@ interface Stats {
   todayRegistrations: number;
   todayDelta: string;
   competitionBreakdown: Record<string, number>;
+  totalCompetitions: number;
 }
-
-const sampleRegistrations = [
-  { name: 'Navin Shanke', initials: 'NS', competition: 'Startup Competition', compColor: '#6C5CE7', college: 'PRMITR Amravati', phone: '+91 98765 43210', status: 'pending', date: '22 Jun 2026' },
-  { name: 'Aman Deshmukh', initials: 'AD', competition: 'Science Exhibition', compColor: '#2EC4B6', college: 'SGBAU Amravati', phone: '+91 91234 56789', status: 'approved', date: '22 Jun 2026' },
-  { name: 'Prachi Kale', initials: 'PK', competition: "Amravati's Got Talent", compColor: '#FF5A1F', college: 'Sipna COET', phone: '+91 99887 77665', status: 'pending', date: '21 Jun 2026' },
-  { name: 'Rohan Kadu', initials: 'RK', competition: 'Youth Parliament', compColor: '#FFB347', college: 'HVPM College', phone: '+91 87654 32109', status: 'approved', date: '21 Jun 2026' },
-  { name: 'Sakshi Bhoyar', initials: 'SB', competition: 'Reel Competition', compColor: '#FF6B6B', college: 'SGBAU Amravati', phone: '+91 93123 45678', status: 'rejected', date: '20 Jun 2026' },
-];
 
 const activities = [
   { icon: 'user-plus', color: 'var(--admin-orange)', bg: 'var(--admin-orange-pale)', title: 'New registration', time: '2m ago', desc: 'Aman Deshmukh registered for Science Exhibition' },
@@ -47,8 +40,6 @@ function ActivityIcon({ type }: { type: string }) {
 }
 
 const compColors = ['#2EC4B6', '#FFB347', '#6C5CE7', '#FF5A1F', '#FF6B6B'];
-const compNames = ['Science Exhibition', 'Youth Parliament', 'Startup Competition', "Amravati's Got Talent", 'Reel Competition'];
-
 const compColorMap: Record<string, string> = {
   'Science Exhibition': '#2EC4B6',
   'Youth Parliament': '#FFB347',
@@ -72,6 +63,7 @@ export default function AdminDashboard() {
   const [dailyData, setDailyData] = useState<{ date: string; registrations: number }[]>([]);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [donutFilter, setDonutFilter] = useState('All');
   const [showDonutDropdown, setShowDonutDropdown] = useState(false);
   const [hoveredComp, setHoveredComp] = useState<string | null>(null);
@@ -95,19 +87,20 @@ export default function AdminDashboard() {
   function fetchAll(p: string) {
     const pp = getPeriodParam(p);
     Promise.all([
-      fetch('/api/admin/stats').then((r) => r.json()),
-      fetch(`/api/admin/registrations?perPage=5&sort=created_at&order=desc&period=${pp}`).then((r) => r.json()),
-      fetch('/api/admin/analytics').then((r) => r.json()),
-      fetch(`/api/admin/activity?period=${pp}`).then((r) => r.json()),
+      fetch('/api/admin/stats').then(async (r) => { if (!r.ok) throw new Error('Stats fetch failed'); return r.json(); }),
+      fetch(`/api/admin/registrations?perPage=5&sort=created_at&order=desc&period=${pp}`).then(async (r) => { if (!r.ok) throw new Error('Registrations fetch failed'); return r.json(); }),
+      fetch('/api/admin/analytics').then(async (r) => { if (!r.ok) throw new Error('Analytics fetch failed'); return r.json(); }),
+      fetch(`/api/admin/activity?period=${pp}`).then(async (r) => { if (!r.ok) throw new Error('Activity fetch failed'); return r.json(); }),
     ])
       .then(([s, r, a, ac]) => {
         setStats(s);
         setRecentRegs(r.data || []);
         setDailyData(a.daily || []);
         setRecentActivity(ac.activities || []);
+        setError(null);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((e) => { setError(e.message); setLoading(false); });
   }
 
   useEffect(() => { fetchAll(period); const id = setInterval(() => fetchAll(period), 30000); return () => clearInterval(id); }, [period]);
@@ -123,17 +116,30 @@ export default function AdminDashboard() {
     );
   }
 
+  if (error && !stats) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+        <div className="admin-card" style={{ background: 'var(--card)', border: '1px solid #E0567A', borderRadius: 22, padding: '2rem', textAlign: 'center', maxWidth: 400 }}>
+          <div style={{ fontSize: '0.9rem', color: '#E0567A', fontWeight: 700, marginBottom: '0.5rem' }}>Failed to load dashboard</div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--admin-muted)' }}>{error}</div>
+          <button onClick={() => { setError(null); setLoading(true); fetchAll(period); }}
+            style={{ marginTop: '1rem', background: 'var(--ink)', color: 'var(--cream)', border: 'none', borderRadius: 9999, padding: '0.65rem 1.4rem', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const compEntries = Object.entries(stats.competitionBreakdown || {});
   const totalCompReg = compEntries.reduce((s, [, c]) => s + c, 0);
-  const allChartEntries = compEntries.length > 0
-    ? compEntries
-    : compNames.map((n, i) => [n, Math.floor(Math.random() * 50 + 10)] as [string, number]);
+  const allChartEntries = compEntries.length > 0 ? compEntries : [];
   const chartEntries = donutFilter === 'All'
     ? allChartEntries
     : allChartEntries.filter(([name]) => name === donutFilter);
   const circumference = 2 * Math.PI * 15.9;
 
-  const allRegs = recentRegs.length > 0 ? recentRegs : sampleRegistrations;
+  const allRegs = recentRegs;
   const regUniqueComps = [...new Set(allRegs.map((r: any) => r.competition_name || r.competition).filter(Boolean))];
   const filteredRegs = allRegs.filter((r: any) => {
     const name = ((r.profiles?.full_name || r.name || '') as string).toLowerCase();
@@ -152,6 +158,12 @@ export default function AdminDashboard() {
 
   return (
     <div>
+      {error && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(224,86,122,0.08)', border: '1px solid rgba(224,86,122,0.3)', borderRadius: 16, padding: '0.75rem 1.25rem', marginBottom: '1rem', fontSize: '0.78rem', color: '#E0567A', fontWeight: 600 }}>
+          <span>⚠ {error} — showing cached data</span>
+          <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', color: '#E0567A', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: '0.78rem', fontWeight: 700, padding: '0.25rem 0.5rem' }}>Dismiss</button>
+        </div>
+      )}
       {/* ============ STAT CARDS ============ */}
       <div className="adm-grid-4" style={{
         display: 'grid',
@@ -184,7 +196,7 @@ export default function AdminDashboard() {
         />
         <StatsCard
           label="Competitions"
-          value={compEntries.length || 5}
+          value={stats.totalCompetitions ?? (compEntries.length || 5)}
           icon="trophy"
           delta="Active"
           sparkColor="#FF5A1F"
@@ -386,7 +398,8 @@ export default function AdminDashboard() {
         alignItems: 'start',
       }}>
         {/* Recent Registrations Table */}
-        <div className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem' }}>
+        <div style={{ minWidth: 0 }}>
+        <div className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem', overflowX: 'auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
             <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: '1.15rem', color: 'var(--ink)' }}>Recent Registrations</div>
           </div>
@@ -396,7 +409,7 @@ export default function AdminDashboard() {
             display: 'flex', alignItems: 'center', gap: '0.75rem',
             marginBottom: '1.25rem', flexWrap: 'wrap',
           }}>
-            <div style={{
+            <div className="adm-db-search" style={{
               flex: 1, minWidth: 200,
               display: 'flex', alignItems: 'center', gap: '0.6rem',
               border: '1px solid var(--admin-line)', borderRadius: 9999,
@@ -603,8 +616,10 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+        </div>
 
         {/* Activity Timeline */}
+        <div style={{ minWidth: 0 }}>
         <div className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
             <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: '1.15rem', color: 'var(--ink)' }}>Recent Activity</div>
@@ -637,6 +652,7 @@ export default function AdminDashboard() {
             })}
           </div>
         </div>
+        </div>
       </div>
 
       {/* Footer */}
@@ -664,6 +680,7 @@ export default function AdminDashboard() {
         @media (max-width: 768px) {
           .adm-donut-flex { flex-direction: column !important; align-items: center !important; }
           .adm-dropdown { right: auto !important; left: 0 !important; }
+          .adm-db-search { min-width: 140px !important; }
         }
       `}</style>
     </div>

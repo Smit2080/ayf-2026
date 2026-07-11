@@ -20,7 +20,7 @@ export default function AdminButton({ mobile }: { mobile?: boolean }) {
       if (profile?.role === 'admin') {
         setIsAdmin(true);
       }
-    });
+    }).catch(() => {});
   }, []);
 
   if (!isAdmin) return null;
@@ -33,7 +33,8 @@ export default function AdminButton({ mobile }: { mobile?: boolean }) {
           color: 'var(--pink)',
           fontWeight: 700,
           fontSize: 12,
-          display: 'block',
+          display: 'flex',
+          alignItems: 'center',
           padding: '4px 0',
         }}
       >
@@ -59,6 +60,8 @@ export default function AdminButton({ mobile }: { mobile?: boolean }) {
         background: 'rgba(255,107,157,0.08)',
         boxShadow: '0 0 12px rgba(255,107,157,0.3)',
         transition: 'opacity .2s',
+        display: 'flex',
+        alignItems: 'center',
       }}
       onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
       onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}

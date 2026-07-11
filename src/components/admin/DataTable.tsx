@@ -35,6 +35,7 @@ interface DataTableProps {
   onExportCSV?: () => void;
   onExportExcel?: () => void;
   filename: string;
+  onRowClick?: (row: any) => void;
 }
 
 export default function DataTable({
@@ -44,7 +45,7 @@ export default function DataTable({
   onSearch, onSort, onPageChange, onStatusFilter,
   onEdit, onBulkAction,
   onExportCSV, onExportExcel,
-  filename,
+  filename, onRowClick,
 }: DataTableProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<{ id: string; key: string } | null>(null);
@@ -174,11 +175,11 @@ export default function DataTable({
                 padding: '0.65rem 2rem 0.65rem 1.1rem',
                 color: 'var(--ink)',
                 fontFamily: "'Inter', sans-serif",
-                fontSize: '0.75rem',
+                fontSize: isMobile ? '0.7rem' : '0.75rem',
                 fontWeight: 600,
                 outline: 'none',
                 cursor: 'pointer',
-                minWidth: 150,
+                minWidth: isMobile ? 120 : 150,
                 appearance: 'none',
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7'%3E%3Cpath d='M0 0l5.5 6 5.5-6z' fill='%23111111'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
@@ -236,14 +237,15 @@ export default function DataTable({
                   <div style={{
                     position: 'absolute',
                     top: '100%',
-                    right: 0,
+                    right: isMobile ? 'auto' : 0,
+                    left: isMobile ? 0 : 'auto',
                     marginTop: 6,
                     background: 'var(--card)',
                     border: '1px solid var(--admin-line)',
                     borderRadius: 16,
                     padding: 6,
                     zIndex: 100,
-                    minWidth: 190,
+                    minWidth: isMobile ? 160 : 190,
                     boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
                   }}>
                     {onExportCSV && (
@@ -422,6 +424,7 @@ export default function DataTable({
                     borderBottom: idx < data.length - 1 ? '1px solid var(--admin-line)' : 'none',
                     background: selected.has(row.id) ? 'var(--admin-lavender-pale)' : idx % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)',
                     transition: 'background 0.1s',
+                    cursor: onRowClick ? 'pointer' : 'default',
                   }}
                   onMouseEnter={(e) => {
                     if (!selected.has(row.id)) e.currentTarget.style.background = 'rgba(156,147,214,0.04)';
@@ -429,6 +432,7 @@ export default function DataTable({
                   onMouseLeave={(e) => {
                     if (!selected.has(row.id)) e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.02)';
                   }}
+                  onClick={() => onRowClick?.(row)}
                 >
                   <td style={{ ...tdStyle, width: 36, textAlign: 'center', ...(isMobile ? { padding: '7px 6px' } : {}) }}>
                     <input

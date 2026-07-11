@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
+import { getCached, setCache } from '@/utils/cache';
+
+const CACHE_TTL = 10_000;
 
 export async function GET() {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const cached = getCached<any>('admin:stats', CACHE_TTL);
+  if (cached) return NextResponse.json(cached);
 
   const supabase = await createClient();
 
@@ -16,57 +22,54 @@ export async function GET() {
   yesterdayStart.setDate(yesterdayStart.getDate() - 1);
   const yesterdayISO = yesterdayStart.toISOString();
 
-  const [
-    { count: totalUsers },
-    { count: totalRegistrations },
-    { count: totalVolunteers },
-    { count: pendingAuditions },
-    { count: slotAllotted },
-    { count: confirmedComps },
-    { count: pendingReviews },
-    { count: shortlisted },
-    { count: approvedVols },
-    { count: todayRegistrations },
-    { count: yesterdayRegistrations },
-    { data: compBreakdown },
-  ] = await Promise.all([
+  const [profiles, competitions, volunteers, compMeta] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }),
-    supabase.from('volunteers').select('*', { count: 'exact', head: true }),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }).eq('status', 'Pending Audition'),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }).eq('status', 'Slot Allotted'),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }).eq('status', 'Confirmed'),
-    supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Pending Review'),
-    supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Shortlisted'),
-    supabase.from('volunteers').select('*', { count: 'exact', head: true }).eq('status', 'Approved'),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }).gte('created_at', todayISO),
-    supabase.from('competitions').select('*', { count: 'exact', head: true }).gte('created_at', yesterdayISO).lt('created_at', todayISO),
-    supabase.from('competitions').select('competition_name'),
+    supabase.from('competitions').select('status, competition_name, created_at'),
+    supabase.from('volunteers').select('status, created_at'),
+    supabase.from('competition_meta').select('id', { count: 'exact', head: true }),
   ]);
 
-  const compCounts: Record<string, number> = {};
-  compBreakdown?.forEach((c: any) => {
-    compCounts[c.competition_name] = (compCounts[c.competition_name] || 0) + 1;
-  });
+  const allComps = competitions.data || [];
+  const allVols = volunteers.data || [];
+  const totalCompetitions = compMeta.count ?? 5;
 
-  const yc = yesterdayRegistrations ?? 0;
-  const tc = todayRegistrations ?? 0;
+  const pendingAuditions = allComps.filter(c => c.status === 'Pending Audition').length;
+  const slotAllotted = allComps.filter(c => c.status === 'Slot Allotted').length;
+  const confirmedComps = allComps.filter(c => c.status === 'Confirmed').length;
+  const todayRegistrations = allComps.filter(c => c.created_at >= todayISO).length;
+  const yesterdayRegistrations = allComps.filter(c => c.created_at >= yesterdayISO && c.created_at < todayISO).length;
+
+  const pendingReviews = allVols.filter(v => v.status === 'Pending Review').length;
+  const shortlisted = allVols.filter(v => v.status === 'Shortlisted').length;
+  const approvedVols = allVols.filter(v => v.status === 'Approved').length;
+
+  const compCounts: Record<string, number> = {};
+  for (const c of allComps) {
+    compCounts[c.competition_name] = (compCounts[c.competition_name] || 0) + 1;
+  }
+
+  const yc = yesterdayRegistrations;
+  const tc = todayRegistrations;
   const todayDelta = yc > 0
     ? `↑ ${((tc / yc) * 100).toFixed(0)}% from yesterday`
     : tc > 0 ? '↑ New today' : '—';
 
-  return NextResponse.json({
-    totalUsers: totalUsers ?? 0,
-    totalRegistrations: totalRegistrations ?? 0,
-    totalVolunteers: totalVolunteers ?? 0,
-    pendingAuditions: pendingAuditions ?? 0,
-    slotAllotted: slotAllotted ?? 0,
-    confirmedComps: confirmedComps ?? 0,
-    pendingReviews: pendingReviews ?? 0,
-    shortlisted: shortlisted ?? 0,
-    approvedVols: approvedVols ?? 0,
+  const result = {
+    totalUsers: profiles.count ?? 0,
+    totalRegistrations: allComps.length,
+    totalVolunteers: allVols.length,
+    pendingAuditions,
+    slotAllotted,
+    confirmedComps,
+    pendingReviews,
+    shortlisted,
+    approvedVols,
     todayRegistrations: tc,
     todayDelta,
     competitionBreakdown: compCounts,
-  });
+    totalCompetitions,
+  };
+
+  setCache('admin:stats', result, CACHE_TTL);
+  return NextResponse.json(result);
 }

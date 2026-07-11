@@ -50,8 +50,12 @@ export default function AdminProfiles() {
     });
     if (search) params.set('search', search);
 
-    const res = await fetch(`/api/admin/profiles?${params}`);
-    const json = await res.json();
+    let json: any = { data: [], total: 0 };
+    try {
+      const res = await fetch(`/api/admin/profiles?${params}`);
+      if (!res.ok) throw new Error('Profiles fetch failed');
+      json = await res.json();
+    } catch (e) { setLoading(false); return; }
     if (id === fetchIdRef.current) {
       setData(json.data || []);
       setTotal(json.total || 0);

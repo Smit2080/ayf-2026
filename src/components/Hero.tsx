@@ -46,7 +46,7 @@ export default function Hero() {
           <span className="sticker sticker-purple" style={{ marginTop: 12 }}>Follow @amravatiyouthfest</span>
         </div>
         <div className="hero-visual">
-          <img className="hero-image" src="/ChatGPT Image Jul 3, 2026, 11_38_09 AM.png" alt="" aria-hidden="true" />
+          <img className="hero-image" src="/ayf-hero.png" alt="AYF 2026 Hero" aria-hidden="true" />
           <div className="badge-float b1">BIGGEST<br />YOUTH MOVEMENT<br />OF AMRAVATI</div>
           <div className="badge-float b2">LEAD THE WAVE</div>
           <div className="gaffer-tape" style={{ width: 100, height: 26, top: 24, left: 24, transform: 'rotate(-8deg)' }} />

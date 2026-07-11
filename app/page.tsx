@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Ticker from '@/components/Ticker';
+import ScrollReveal from '@/components/ScrollReveal';
 import WhyAYF from '@/components/WhyAYF';
 import EventCategories from '@/components/EventCategories';
 import Journey from '@/components/Journey';
@@ -17,6 +18,7 @@ export default function HomePage() {
       <div className="cursor-dot" id="cursorDot" />
 
       <Navbar />
+      <ScrollReveal />
 
       <main id="top">
         <Hero />

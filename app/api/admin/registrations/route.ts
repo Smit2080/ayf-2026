@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import { createAdminClient } from '@/utils/supabase/adminClient';
+import { getCached, setCache, clearCache } from '@/utils/cache';
+
+const CACHE_TTL = 10_000;
 
 export async function GET(request: NextRequest) {
   const admin = await getAdminUser();
@@ -9,6 +12,9 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
   const { searchParams } = new URL(request.url);
+  const cacheKey = `admin:registrations:${searchParams.toString()}`;
+  const cached = getCached<any>(cacheKey, CACHE_TTL);
+  if (cached) return NextResponse.json(cached);
   const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
   const perPage = Math.min(100, Math.max(1, parseInt(searchParams.get('perPage') || '25')));
   const search = searchParams.get('search') || '';
@@ -16,10 +22,15 @@ export async function GET(request: NextRequest) {
   const order = searchParams.get('order') || 'desc';
   const statusFilter = searchParams.get('status') || '';
   const periodFilter = searchParams.get('period') || '';
+  const userId = searchParams.get('user_id') || '';
 
   let query = supabase
     .from('competitions')
     .select('*', { count: 'exact' });
+
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
 
   if (periodFilter && periodFilter !== 'all') {
     const now = new Date();
@@ -46,7 +57,9 @@ export async function GET(request: NextRequest) {
   }
 
   query = query.order(sort, { ascending: order === 'asc' });
-  query = query.range((page - 1) * perPage, page * perPage - 1);
+  if (!userId) {
+    query = query.range((page - 1) * perPage, page * perPage - 1);
+  }
 
   const { data, count, error } = await query;
 
@@ -81,12 +94,14 @@ export async function GET(request: NextRequest) {
       })
     : merged;
 
-  return NextResponse.json({
+  const result = {
     data: filtered,
     total: count ?? 0,
     page,
     perPage,
-  });
+  };
+  setCache(cacheKey, result, CACHE_TTL);
+  return NextResponse.json(result);
 }
 
 export async function PATCH(request: NextRequest) {
@@ -113,6 +128,10 @@ export async function PATCH(request: NextRequest) {
       .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    clearCache('admin:registrations:');
+    clearCache('admin:stats');
+    clearCache('admin:analytics');
+    clearCache('admin:activity:');
     return NextResponse.json({ data });
   }
 
@@ -126,5 +145,9 @@ export async function PATCH(request: NextRequest) {
     .select();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  clearCache('admin:registrations:');
+  clearCache('admin:stats');
+  clearCache('admin:analytics');
+  clearCache('admin:activity:');
   return NextResponse.json({ data });
 }

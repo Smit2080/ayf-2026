@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DataTable, { Column } from '@/components/admin/DataTable';
 import StatusBadge from '@/components/admin/StatusBadge';
+import DetailModal from '@/components/admin/DetailModal';
 
 const statusOptions = [
   { label: 'All Statuses', value: '' },
@@ -32,6 +33,13 @@ const columns: Column[] = [
   },
 ];
 
+const volStatusActions = [
+  { label: 'Pending Review', icon: '⏳', color: 'var(--admin-orange)' },
+  { label: 'Shortlisted', icon: '⭐', color: '#8B5CF6' },
+  { label: 'Approved', icon: '✓', color: '#22C55E' },
+  { label: 'Rejected', icon: '✕', color: '#EF4444' },
+];
+
 export default function AdminVolunteers() {
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -43,6 +51,9 @@ export default function AdminVolunteers() {
   const [loading, setLoading] = useState(true);
   const fetchIdRef = useRef(0);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<any>(null);
+
   const fetchData = useCallback(async () => {
     const id = ++fetchIdRef.current;
     setLoading(true);
@@ -53,8 +64,12 @@ export default function AdminVolunteers() {
     });
     if (search) params.set('search', search);
 
-    const res = await fetch(`/api/admin/volunteers?${params}`);
-    const json = await res.json();
+    let json: any = { data: [], total: 0 };
+    try {
+      const res = await fetch(`/api/admin/volunteers?${params}`);
+      if (!res.ok) throw new Error('Volunteers fetch failed');
+      json = await res.json();
+    } catch (e) { setLoading(false); return; }
     if (id === fetchIdRef.current) {
       setData(json.data || []);
       setTotal(json.total || 0);
@@ -82,6 +97,16 @@ export default function AdminVolunteers() {
     });
     if (!res.ok) { console.error('Edit failed', await res.text()); return; }
     fetchData();
+    if (modalOpen && selectedRow) refreshRow(id);
+  }
+
+  async function refreshRow(id: string) {
+    const res = await fetch(`/api/admin/volunteers?perPage=1&sort=created_at&order=desc`);
+    if (res.ok) {
+      const json = await res.json();
+      const found = json.data?.find((r: any) => r.id === id);
+      if (found) setSelectedRow(found);
+    }
   }
 
   async function handleBulkAction(ids: string[], action: string) {
@@ -97,6 +122,26 @@ export default function AdminVolunteers() {
     });
     if (!res.ok) { console.error('Bulk action failed', await res.text()); return; }
     fetchData();
+  }
+
+  async function handleStatusChange(id: string, newStatus: string) {
+    setSelectedRow((prev: any) => prev?.id === id ? { ...prev, status: newStatus } : prev);
+    const res = await fetch('/api/admin/volunteers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: newStatus }),
+    });
+    if (!res.ok) {
+      console.error('Status update failed', await res.text());
+      fetchData();
+      return;
+    }
+    fetchData();
+  }
+
+  function openDetail(row: any) {
+    setSelectedRow(row);
+    setModalOpen(true);
   }
 
   return (
@@ -131,7 +176,118 @@ export default function AdminVolunteers() {
         onExportCSV={() => window.open('/api/admin/export?type=volunteers&format=csv', '_blank')}
         onExportExcel={() => window.open('/api/admin/export?type=volunteers&format=xlsx', '_blank')}
         filename="volunteers"
+        onRowClick={openDetail}
       />
+
+      <DetailModal open={modalOpen} onClose={() => setModalOpen(false)} title="Volunteer Application">
+        {selectedRow && (() => {
+          const p = selectedRow.profiles || {};
+          return (
+            <>
+              <div style={{
+                background: 'var(--cream)',
+                borderRadius: 14, padding: '18px 22px',
+                display: 'grid', gridTemplateColumns: '1fr 1fr',
+                gap: '8px 28px', fontSize: 13, marginBottom: 24,
+              }}>
+                <Row label="Name" value={p.full_name} />
+                <Row label="Email" value={p.email} />
+                <Row label="WhatsApp" value={p.whatsapp_number} />
+                <Row label="Age" value={p.age} />
+                <Row label="Gender" value={selectedRow.gender} />
+                <Row label="College" value={p.college} />
+                <Row label="Stream" value={p.stream} />
+                <Row label="City" value={selectedRow.city} />
+                <Row label="Languages" value={selectedRow.languages} />
+              </div>
+
+              <div style={{
+                marginBottom: 20,
+              }}>
+                <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-faint)', marginBottom: 6 }}>
+                  Previous Event Experience
+                </h4>
+                <div style={{
+                  fontSize: 13, color: 'var(--admin-muted)',
+                  lineHeight: 1.6, background: 'var(--cream)',
+                  borderRadius: 8, padding: '10px 14px',
+                }}>
+                  {selectedRow.experience}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-faint)', marginBottom: 6 }}>
+                  Why Volunteer
+                </h4>
+                <div style={{
+                  fontSize: 13, color: 'var(--admin-muted)',
+                  lineHeight: 1.6, background: 'var(--cream)',
+                  borderRadius: 8, padding: '10px 14px',
+                }}>
+                  {selectedRow.why_volunteer}
+                </div>
+              </div>
+
+              {selectedRow.instagram_id && (
+                <div style={{ marginBottom: 20 }}>
+                  <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--admin-faint)', marginBottom: 6 }}>
+                    Instagram
+                  </h4>
+                  <div style={{ fontSize: 13, color: 'var(--admin-muted)' }}>
+                    {selectedRow.instagram_id}
+                  </div>
+                </div>
+              )}
+
+              <div style={{
+                display: 'flex', gap: 6, flexWrap: 'wrap',
+                paddingTop: 16, borderTop: '1px solid var(--admin-line)',
+              }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+                  letterSpacing: '0.06em', color: 'var(--admin-faint)',
+                  width: '100%', marginBottom: 4,
+                }}>
+                  Change Status
+                </span>
+                {volStatusActions.map((action) => {
+                  const active = selectedRow.status === action.label;
+                  return (
+                    <button
+                      key={action.label}
+                      onClick={() => handleStatusChange(selectedRow.id, action.label)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        padding: '6px 12px', borderRadius: 9999,
+                        border: `1.5px solid ${active ? action.color : 'var(--admin-line)'}`,
+                        background: active ? `${action.color}18` : 'transparent',
+                        color: active ? action.color : 'var(--admin-faint)',
+                        fontWeight: 600, fontSize: 11,
+                        fontFamily: "'Inter', sans-serif",
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      <span style={{ fontSize: 13 }}>{action.icon}</span>
+                      {action.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          );
+        })()}
+      </DetailModal>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: any }) {
+  return (
+    <div>
+      <span style={{ color: 'var(--admin-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{label}</span>
+      <div style={{ color: 'var(--ink)', fontWeight: 500, marginTop: 1 }}>{value ?? '—'}</div>
     </div>
   );
 }

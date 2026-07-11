@@ -129,19 +129,51 @@ export default function AdminAnalytics() {
 
   useEffect(() => {
     fetch('/api/admin/analytics')
-      .then((r) => r.json())
+      .then(async (r) => { if (!r.ok) throw new Error('Analytics fetch failed'); return r.json(); })
       .then((d) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   if (loading || !data) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid var(--admin-orange)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 12px', animation: 'dSpin 1s linear infinite' }} />
-        <style>{`@keyframes dSpin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  );
-}
+      <div>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ width: 160, height: 30, background: 'rgba(17,17,17,0.06)', borderRadius: 8, animation: 'skPulse 1.5s ease-in-out infinite' }} />
+          <div style={{ width: 320, height: 16, background: 'rgba(17,17,17,0.04)', borderRadius: 6, marginTop: 10, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: '0.1s' }} />
+        </div>
+        <div className="adm-an-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem', marginBottom: '1.5rem' }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.25rem 1.5rem' }}>
+              <div style={{ width: 100, height: 14, background: 'rgba(17,17,17,0.04)', borderRadius: 4, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+              <div style={{ width: 80, height: 36, background: 'rgba(17,17,17,0.06)', borderRadius: 8, marginTop: 10, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+            </div>
+          ))}
+        </div>
+        <div className="adm-an-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '1.5rem' }}>
+          {[1, 2].map((i) => (
+            <div key={i} className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem' }}>
+              <div style={{ width: 140, height: 18, background: 'rgba(17,17,17,0.06)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+              <div style={{ width: '100%', height: 200, background: 'rgba(17,17,17,0.03)', borderRadius: 12, marginTop: 16, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+            </div>
+          ))}
+        </div>
+        <div className="adm-an-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          {[1, 2].map((i) => (
+            <div key={i} className="admin-card" style={{ background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem' }}>
+              <div style={{ width: 180, height: 18, background: 'rgba(17,17,17,0.06)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+              {[1, 2, 3].map((j) => (
+                <div key={j} style={{ marginTop: 16 }}>
+                  <div style={{ width: '70%', height: 14, background: 'rgba(17,17,17,0.04)', borderRadius: 4, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1 + j * 0.1}s` }} />
+                  <div style={{ width: '100%', height: 6, background: 'rgba(17,17,17,0.03)', borderRadius: 9999, marginTop: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1 + j * 0.15}s` }} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <style>{`@keyframes skPulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
+      </div>
+    );
+  }
 
   const regValues = data.daily.map((d) => d.registrations);
   const volValues = data.dailyVolunteers.map((d) => d.applications);

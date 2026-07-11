@@ -32,8 +32,22 @@ function RegisterContent() {
   const [stream, setStream] = useState('');
 
   // Competition specific fields
-  const [competition, setCompetition] = useState('');
+  const [selectedCompetitions, setSelectedCompetitions] = useState<string[]>([]);
   const [performanceDetails, setPerformanceDetails] = useState('');
+
+  const COMPETITIONS = [
+    'Science Exhibition',
+    'Youth Parliament',
+    'Startup Competition',
+    "Amravati's Got Talent",
+    'Reel Competition',
+  ];
+
+  function toggleCompetition(name: string) {
+    setSelectedCompetitions((prev) =>
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+    );
+  }
 
   // Volunteer specific fields
   const [gender, setGender] = useState('');
@@ -186,23 +200,28 @@ function RegisterContent() {
 
       // 2. Insert form-specific registration
       if (type === 'comp') {
-        // Guard: prevent duplicate competition registration
-        if (registeredCompetitions.includes(competition)) {
-          alert(`You have already registered for "${competition}". Each competition allows only one registration per person.`);
+        const newComps = selectedCompetitions.filter(
+          (c) => !registeredCompetitions.includes(c)
+        );
+
+        if (newComps.length === 0) {
+          alert('You are already registered for all selected competitions.');
           setSubmitting(false);
           return;
         }
 
+        const rows = newComps.map((name) => ({
+          user_id: user.id,
+          competition_name: name,
+          performance_details: performanceDetails,
+        }));
+
         const { error: compError } = await supabase
           .from('competitions')
-          .insert({
-            user_id: user.id,
-            competition_name: competition,
-            performance_details: performanceDetails,
-          });
+          .insert(rows);
 
         if (compError) throw compError;
-        setRegisteredCompetitions((prev) => [...prev, competition]);
+        setRegisteredCompetitions((prev) => [...prev, ...newComps]);
         setSuccess('comp');
       } else {
         const { error: volError } = await supabase
@@ -451,25 +470,33 @@ function RegisterContent() {
               {tab === 'competition' ? (
                 <form onSubmit={(e) => handleFormSubmit(e, 'comp')}>
                   <div className="register-grid">
-                    <Field className="full" label="Competition" required>
-                      <select required value={competition} onChange={(e) => setCompetition(e.target.value)}>
-                        <option value="" disabled>Select competition</option>
-                        <option value="Science Exhibition">Science Exhibition</option>
-                        <option value="Youth Parliament">Youth Parliament</option>
-                        <option value="Startup Competition">Startup Competition</option>
-                        <option value="Amravati's Got Talent">Amravati&apos;s Got Talent</option>
-                        <option value="Reel Competition ( No Fees for Reel Competion )">Reel Competition (Free Entry)</option>
-                      </select>
-                      {competition && registeredCompetitions.includes(competition) && (
-                        <p style={{
-                          color: '#FF4D4D',
-                          fontSize: '13px',
-                          marginTop: '6px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                        }}>
-                          ⚠️ You have already registered for <strong>{competition}</strong>. Each competition allows only one entry per person.
+                    <Field className="full" label="Competitions" required>
+                      <div className="register-comp-grid">
+                        {COMPETITIONS.map((name) => {
+                          const fee = name === 'Reel Competition' ? 'Free' : 'Rs.500';
+                          const alreadyIn = registeredCompetitions.includes(name);
+                          const selected = selectedCompetitions.includes(name);
+                          return (
+                            <label
+                              key={name}
+                              className={`register-comp-card ${selected ? 'selected' : ''} ${alreadyIn ? 'disabled' : ''}`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selected || alreadyIn}
+                                disabled={alreadyIn}
+                                onChange={() => toggleCompetition(name)}
+                              />
+                              <span className="register-comp-name">{name}</span>
+                              <span className="register-comp-fee">{fee}</span>
+                              {alreadyIn && <span className="register-comp-already">Already registered</span>}
+                            </label>
+                          );
+                        })}
+                      </div>
+                      {selectedCompetitions.length === 0 && (
+                        <p style={{ color: 'rgba(247,247,247,0.5)', fontSize: '12px', marginTop: '6px' }}>
+                          Select at least one competition
                         </p>
                       )}
                     </Field>
@@ -492,7 +519,7 @@ function RegisterContent() {
                       <input type="text" value={stream} onChange={(e) => setStream(e.target.value)} placeholder="Science, Arts, Commerce, etc." required />
                     </Field>
                     <Field className="full" label="Performance Details" required>
-                      <textarea value={performanceDetails} onChange={(e) => setPerformanceDetails(e.target.value)} placeholder="Tell us about your participation and which competition you're entering in detail" required />
+                      <textarea value={performanceDetails} onChange={(e) => setPerformanceDetails(e.target.value)} placeholder="Describe your act / entry in detail. If entering multiple competitions, specify details for each." required />
                     </Field>
                   </div>
                   <Terms type="comp" />
@@ -500,7 +527,7 @@ function RegisterContent() {
                     <button
                       type="submit"
                       className="btn btn-solid register-submit-btn"
-                      disabled={submitting || (competition !== '' && registeredCompetitions.includes(competition))}
+                      disabled={submitting || selectedCompetitions.length === 0}
                     >
                       {submitting ? 'Submitting...' : 'Register Now'}
                     </button>

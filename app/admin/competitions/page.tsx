@@ -16,16 +16,37 @@ export default function AdminCompetitions() {
 
   useEffect(() => {
     fetch('/api/admin/competitions')
-      .then((r) => r.json())
+      .then(async (r) => { if (!r.ok) throw new Error('Competitions fetch failed'); return r.json(); })
       .then((d) => { setComps(d.competitions || []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid var(--admin-orange)', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 12px', animation: 'dSpin 1s linear infinite' }} />
-        <style>{`@keyframes dSpin{to{transform:rotate(360deg)}}`}</style>
+      <div>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ width: 200, height: 30, background: 'rgba(17,17,17,0.06)', borderRadius: 8, animation: 'skPulse 1.5s ease-in-out infinite' }} />
+          <div style={{ width: 300, height: 16, background: 'rgba(17,17,17,0.04)', borderRadius: 6, marginTop: 10, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: '0.1s' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="admin-card" style={{
+              background: 'var(--card)', border: '1px solid var(--admin-line)', borderRadius: 22, padding: '1.5rem',
+              display: 'flex', flexDirection: 'column', gap: '1rem',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(17,17,17,0.06)', animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ width: '60%', height: 18, background: 'rgba(17,17,17,0.06)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+                  <div style={{ width: '40%', height: 12, background: 'rgba(17,17,17,0.04)', borderRadius: 4, marginTop: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+                </div>
+              </div>
+              <div style={{ width: 60, height: 22, borderRadius: 9999, background: 'rgba(17,17,17,0.06)', animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.1}s` }} />
+              <div style={{ height: 30, width: '40%', background: 'rgba(17,17,17,0.04)', borderRadius: 6, animation: 'skPulse 1.5s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+            </div>
+          ))}
+        </div>
+        <style>{`@keyframes skPulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
       </div>
     );
   }

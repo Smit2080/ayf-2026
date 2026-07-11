@@ -127,11 +127,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             flex: 1,
           }}>
             <TopBar onOpenSidebar={() => setSidebarOpen(v => !v)} />
-            {children}
+            <div className="adm-page">{children}</div>
           </div>
         </div>
       </div>
       <style>{`@media(max-width:768px){.adm-main-content{padding:1.25rem 1rem 2rem !important}}`}</style>
+      <style>{`.adm-page{animation:admFadeIn 0.25s ease}@keyframes admFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </AdminPeriodProvider>
   );
 }
