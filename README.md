@@ -41,9 +41,11 @@ A full-stack event platform powering registrations, auditions, volunteers, and a
 
 ### 🌐 Public Landing Page
 
-| Hero + Countdown | Event Categories |
-|---|---|
-| ![Hero Section](public/ayf-hero.png) | ![Event Categories](public/science-exhibition-banner.png) |
+![Home Page](public/screenshots/home.png)
+
+### 📋 Registration Page
+
+![Registration Page](public/screenshots/register.png)
 
 ### 🛠️ Admin Panel
 
@@ -51,13 +53,11 @@ The admin panel uses a cream & black design system with live Supabase data acros
 
 | Dashboard | Registrations |
 |---|---|
-| Stats cards, donut chart, trend line, activity feed | Paginated table, inline status edit, detail modal, bulk actions |
+| ![Admin Dashboard](public/screenshots/admin-dashboard.png) | ![Admin Registrations](public/screenshots/admin-regs.png) |
 
 | Volunteers | Analytics |
 |---|---|
-| Application review & shortlisting | 30-day SVG line charts, status breakdowns |
-
-> 📸 *Add screenshots by dragging them into `/public/screenshots/` and updating the paths above.*
+| ![Admin Volunteers](public/screenshots/admin-volunteers.png) | ![Admin Analytics](public/screenshots/admin-analytics.png) |
 
 ---
 
