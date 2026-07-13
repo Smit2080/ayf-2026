@@ -32,32 +32,38 @@ A full-stack event platform powering registrations, auditions, volunteers, and a
 
 ## 🖥️ Live Demo
 
-> **Public site:** [ayf2026.vercel.app](https://ayf2026.vercel.app)  
-> **Admin panel:** [ayf2026.vercel.app/admin](https://ayf2026.vercel.app/admin) *(admin role required)*
+> **Public site:** [ayf2026-chi.vercel.app](https://ayf2026-chi.vercel.app)  
+> **Admin panel:** [ayf2026-chi.vercel.app/admin](https://ayf2026-chi.vercel.app/admin) *(admin role required)*
 
 ---
 
 ## 📸 Screenshots
 
-### 🌐 Public Landing Page
+### 🌐 Public Landing Page — Desktop (1440px)
 
 ![Home Page](public/screenshots/home.png)
 
-### 📋 Registration Page
+### 📱 Mobile View (390px)
 
-![Registration Page](public/screenshots/register.png)
+![Mobile Home](public/screenshots/mobile-home.png)
+
+### 🖼️ Full Page Scroll
+
+![Full Page](public/screenshots/home-tall.png)
 
 ### 🛠️ Admin Panel
 
-The admin panel uses a cream & black design system with live Supabase data across 7 pages.
+The admin panel (`/admin`) is protected by Google OAuth + role check. Sign in with an admin account to access:
 
-| Dashboard | Registrations |
+| Page | Features |
 |---|---|
-| ![Admin Dashboard](public/screenshots/admin-dashboard.png) | ![Admin Registrations](public/screenshots/admin-regs.png) |
-
-| Volunteers | Analytics |
-|---|---|
-| ![Admin Volunteers](public/screenshots/admin-volunteers.png) | ![Admin Analytics](public/screenshots/admin-analytics.png) |
+| **Dashboard** | Stats cards, donut chart, trend line, activity feed |
+| **Registrations** | Paginated table, inline status & slot edit, bulk actions, export |
+| **Volunteers** | Application list, shortlisting, detail modal |
+| **Profiles** | Read-only user list with XLSX export |
+| **Competitions** | Cards with capacity bars, open/closed toggle |
+| **Analytics** | 30-day SVG line charts, daily series |
+| **Settings** | Toggle competition registration open/close |
 
 ---
 
